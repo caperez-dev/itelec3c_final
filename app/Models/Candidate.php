@@ -14,6 +14,7 @@ class Candidate extends Model
         'candidate_name',
         'party_affiliation',
         'position_id',
+        'status',
         'created_at',
         'updated_at'
     ];

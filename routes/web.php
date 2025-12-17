@@ -12,7 +12,30 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    // Count total registered voters (not deleted)
+    $registeredVoters = \App\Models\Voter::whereNull('deleted_at')->count();
+    
+    // Count voted users (has_voted = 1)
+    $votedUsers = \App\Models\Voter::whereNull('deleted_at')
+        ->where('has_voted', 1)
+        ->count();
+    
+    // Calculate voter turnout percentage
+    $voterTurnout = $registeredVoters > 0 
+        ? round(($votedUsers / $registeredVoters) * 100, 2) 
+        : 0;
+    
+    // You'll need to add these counts for candidates and positions later
+    $totalCandidates = \App\Models\Candidate::whereNull('deleted_at')->count();
+    $totalPositions = \App\Models\Position::whereNull('deleted_at')->count();
+    
+    return view('dashboard', compact(
+        'registeredVoters',
+        'votedUsers',
+        'voterTurnout',
+        'totalCandidates',
+        'totalPositions'
+    ));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -45,6 +68,8 @@ Route::get('/candidates/{id}/edit', [CandidateController::class, 'edit'])->name(
 Route::put('/candidates/{id}', [CandidateController::class, 'update'])->name('candidates.update');
 Route::delete('/candidates/{id}', [CandidateController::class, 'destroy'])->name('candidates.destroy');
 Route::delete('force-delete-candidate/{id}', [CandidateController::class, 'forceDelete'])->name('force.delete.candidate');
+Route::post('/candidates/{id}/disable', [CandidateController::class, 'disable'])->name('candidates.disable');
+Route::post('/candidates/{id}/enable', [CandidateController::class, 'enable'])->name('candidates.enable');
 
 // Vote Routes
 Route::get('/display-votes', [VoteController::class, 'DisplayVotes'])->name('votes.display');
@@ -69,6 +94,10 @@ Route::post('restore/{id}', [PositionController::class, 'restore'])->name('resto
 
 // Force Delete Position (Permanent)
 Route::delete('force-delete-position/{id}', [PositionController::class, 'forceDelete'])->name('force.delete.position');
+
+// Edit Position form and update
+Route::get('/edit-position/{id}', [PositionController::class, 'edit'])->name('positions.edit');
+Route::put('/positions/{id}', [PositionController::class, 'update'])->name('positions.update');
 
 // Archived Candidates Routes
 Route::get('/display-archived-candidates', [CandidateController::class, 'ArchivedCandidatesDisplay'])->name('display.archived.candidates');

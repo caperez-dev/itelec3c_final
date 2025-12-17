@@ -1,11 +1,13 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Voter extends Model
 {
+    use SoftDeletes;
+    
     //Name of table
     protected $table = 'voters';
     protected $primaryKey = 'voter_id';
@@ -21,7 +23,6 @@ class Voter extends Model
         'imagepath',
         'has_voted',
         'status',
-        'deleted_at',
     ];
     
     protected $casts = [
@@ -29,4 +30,7 @@ class Voter extends Model
         'has_voted' => 'boolean',
         'deleted_at' => 'datetime',
     ];
+    
+    // Dates for soft deletes
+    protected $dates = ['deleted_at'];
 }

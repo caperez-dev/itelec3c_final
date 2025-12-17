@@ -183,10 +183,10 @@
                                 <thead class="table-header">
                                     <tr>
                                         <th scope="col"></th>
-                                        <th scope="col">Candidate ID</th>
                                         <th scope="col">Candidate Name</th>
                                         <th scope="col">Party Affiliation</th>
                                         <th scope="col">Position</th>
+                                        <th scope="col">Status</th>
                                         <th scope="col">Applied Date</th>
                                         <th scope="col" class="actions-column" style="display: none;">Actions</th>
                                     </tr>
@@ -199,9 +199,6 @@
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                         </th>
-                                        <th scope="row">
-                                            {{ $candidate->candidate_id }}
-                                        </th>
                                         <td class="fw-semibold">{{ $candidate->candidate_name }}</td>
                                         <td>
                                             <span class="party-badge">
@@ -213,11 +210,35 @@
                                                 {{ $candidate->position_name }}
                                             </span>
                                         </td>
+                                        <td>
+                                            @if($candidate->status === 'Disabled')
+                                                <span class="badge bg-secondary">Disabled</span>
+                                            @else
+                                                <span class="badge bg-success">Active</span>
+                                            @endif
+                                        </td>
                                         <td>{{ \Carbon\Carbon::parse($candidate->created_at)->format('M d, Y') }}</td>
                                         <td class="actions-column" style="display: none;">
                                             <a href="{{ route('candidates.edit', $candidate->candidate_id) }}" class="btn btn-sm btn-warning btn-action">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
+                                            
+                                            @if($candidate->status !== 'Disabled')
+                                                <form action="{{ route('candidates.disable', $candidate->candidate_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to disable this candidate?');">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-secondary btn-action">
+                                                        <i class="fas fa-ban"></i> Disable
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <form action="{{ route('candidates.enable', $candidate->candidate_id) }}" method="POST" style="display:inline;">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success btn-action">
+                                                        <i class="fas fa-check-circle"></i> Enable
+                                                    </button>
+                                                </form>
+                                            @endif
+                                            
                                             <form action="{{ route('candidates.destroy', $candidate->candidate_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this candidate?');">
                                                 @csrf
                                                 @method('DELETE')
