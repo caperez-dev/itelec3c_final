@@ -734,10 +734,12 @@
                                 <label class="candidate-option">
                                     <input 
                                         type="radio" 
-                                        name="votes[{{ $position->id }}]" 
-                                        value="{{ $candidate->id }}"
-                                        {{ old('votes.' . $position->id) == $candidate->id ? 'checked' : '' }}
+                                        name="votes[{{ $position->position_id }}]" 
+                                        value="{{ $candidate->candidate_id }}"
+                                        {{ old('votes.' . $position->position_id) == $candidate->candidate_id ? 'checked' : '' }}
                                         class="candidate-radio"
+                                        data-position-id="{{ $position->position_id }}"
+                                        data-candidate-id="{{ $candidate->candidate_id }}"
                                     />
                                     <div class="candidate-content">
                                         <div class="candidate-photo">
@@ -765,10 +767,12 @@
                         <label class="abstain-option">
                             <input 
                                 type="radio" 
-                                name="votes[{{ $position->id }}]" 
+                                name="votes[{{ $position->position_id }}]" 
                                 value="abstain"
-                                {{ old('votes.' . $position->id) == 'abstain' ? 'checked' : '' }}
+                                {{ old('votes.' . $position->position_id) == 'abstain' ? 'checked' : '' }}
                                 class="candidate-radio"
+                                data-position-id="{{ $position->position_id }}"
+                                data-candidate-id="abstain"
                             />
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 1.75rem; height: 1.75rem; color: rgba(168, 85, 247, 0.6);">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -834,5 +838,58 @@
             </div>
         </form>
     </div>
+
+    <script>
+        // Simple toggle behavior - click again to unselect
+        document.addEventListener('DOMContentLoaded', function() {
+            const votes = {};
+            const lastSelected = {};
+            
+            // Restore from localStorage first
+            document.querySelectorAll('input[type="radio"][name^="votes"]').forEach(radio => {
+                const positionId = radio.getAttribute('data-position-id');
+                const saved = localStorage.getItem('votes_backup_' + positionId);
+                
+                if (saved && radio.value === saved) {
+                    radio.checked = true;
+                    votes[positionId] = saved;
+                    lastSelected[positionId] = radio;
+                } else if (radio.checked) {
+                    votes[positionId] = radio.value;
+                    lastSelected[positionId] = radio;
+                }
+            });
+            
+            // Add click listener for toggle behavior
+            document.querySelectorAll('input[type="radio"][name^="votes"]').forEach(radio => {
+                radio.addEventListener('click', function() {
+                    const positionId = this.getAttribute('data-position-id');
+                    
+                    // If clicking the already-selected radio, uncheck it
+                    if (lastSelected[positionId] === this && this.checked) {
+                        this.checked = false;
+                        delete votes[positionId];
+                        delete lastSelected[positionId];
+                        localStorage.removeItem('votes_backup_' + positionId);
+                        console.log('Unselected position', positionId);
+                    } else {
+                        // New selection
+                        votes[positionId] = this.value;
+                        lastSelected[positionId] = this;
+                        localStorage.setItem('votes_backup_' + positionId, this.value);
+                        console.log('Selected position', positionId, '=', this.value);
+                    }
+                });
+            });
+            
+            // Clear localStorage on form submit
+            document.querySelector('.voting-form').addEventListener('submit', function() {
+                Object.keys(votes).forEach(positionId => {
+                    localStorage.removeItem('votes_backup_' + positionId);
+                });
+            });
+        });
+    </script>
 </body>
 </html>
+

@@ -844,7 +844,7 @@
             <div class="stat-card">
                 <div class="stat-content">
                     <p>Participation Rate</p>
-                    <div class="stat-number">{{ round(($totalVotes / max($totalVoters, 1)) * 100) }}%</div>
+                    <div class="stat-number">{{ round(($votedCount / max($totalVoters, 1)) * 100) }}%</div>
                     <div class="stat-description">Of eligible voters</div>
                 </div>
                 <div class="stat-icon indigo-stat">
@@ -874,22 +874,27 @@
 
                 <!-- Results -->
                 @php
-                    $voteData = $position->voteCount;
-                    $maxVotes = $voteData->max('vote_count') ?? 0;
-                    $leadingCandidate = $voteData->where('vote_count', $maxVotes)->first();
+                    // Get candidates for this position and sort by vote count
+                    $candidates = $position->candidates->sortByDesc(function($candidate) {
+                        return $candidate->voteCount->vote_count ?? 0;
+                    });
+                    $maxVotes = $candidates->max(function($candidate) {
+                        return $candidate->voteCount->vote_count ?? 0;
+                    }) ?? 0;
                 @endphp
 
                 <div class="results-space">
-                    @if($voteData->count() > 0)
-                        @foreach($voteData->sortByDesc('vote_count') as $voteCount)
+                    @if($candidates->count() > 0)
+                        @foreach($candidates as $candidate)
                             @php
-                                $percentage = $maxVotes > 0 ? ($voteCount->vote_count / $maxVotes) * 100 : 0;
-                                $isLeading = $voteCount->id === $leadingCandidate?->id;
+                                $voteCount = $candidate->voteCount->vote_count ?? 0;
+                                $percentage = $maxVotes > 0 ? ($voteCount / $maxVotes) * 100 : 0;
+                                $isLeading = $voteCount > 0 && $voteCount === $maxVotes;
                             @endphp
                             <div class="candidate-result {{ $isLeading ? 'leading' : '' }}">
                                 <div class="candidate-photo">
-                                    @if($voteCount->candidate && $voteCount->candidate->imagepath)
-                                        <img src="{{ asset('storage/' . $voteCount->candidate->imagepath) }}" alt="{{ $voteCount->candidate->candidate_name }}">
+                                    @if($candidate->imagepath)
+                                        <img src="{{ asset('storage/' . $candidate->imagepath) }}" alt="{{ $candidate->candidate_name }}">
                                     @else
                                         <svg fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
@@ -897,14 +902,12 @@
                                     @endif
                                 </div>
                                 <div class="candidate-info">
-                                    <h3>{{ $voteCount->candidate->candidate_name ?? 'Abstain' }}</h3>
-                                    @if($voteCount->candidate)
-                                        <p>{{ $position->position_name }}</p>
-                                    @endif
+                                    <h3>{{ $candidate->candidate_name }}</h3>
+                                    <p>{{ $position->position_name }}</p>
                                 </div>
                                 <div class="vote-stats">
                                     <div class="vote-count">
-                                        <div class="vote-number">{{ $voteCount->vote_count }}</div>
+                                        <div class="vote-number">{{ $voteCount }}</div>
                                         <div class="vote-label">Votes</div>
                                     </div>
                                     <div class="progress-bar-container">

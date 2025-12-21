@@ -69,10 +69,10 @@ class VoteController extends Controller
         // Get votes array from request
         $votes = $request->input('votes', []);
 
-        // Validate that at least one vote was made
+        // Validate that at least one vote was made (not abstain and not empty)
         $hasVote = false;
         foreach ($votes as $positionId => $candidateId) {
-            if (!empty($candidateId)) {
+            if (!empty($candidateId) && $candidateId !== 'abstain') {
                 $hasVote = true;
                 break;
             }
@@ -91,8 +91,8 @@ class VoteController extends Controller
 
         // Process votes
         foreach ($votes as $positionId => $candidateId) {
-            // Skip empty votes (abstain)
-            if (empty($candidateId)) {
+            // Skip empty votes or abstain selections
+            if (empty($candidateId) || $candidateId === 'abstain') {
                 continue;
             }
 
@@ -138,22 +138,25 @@ class VoteController extends Controller
      */
     public function showResults()
     {
-        // Get all positions with their candidates and vote counts
+        // Get all positions with their candidates and each candidate's vote count
         $positions = Position::whereNull('deleted_at')
             ->with(['candidates' => function($query) {
-                $query->where('status', 'Active')->whereNull('deleted_at');
-            }, 'voteCounts'])
+                $query->where('status', 'Active')
+                      ->whereNull('deleted_at')
+                      ->with('voteCount'); // Load vote count for each candidate
+            }])
             ->get();
 
         // Calculate statistics
         $totalVoters = Voter::whereNull('deleted_at')->count();
         $votedCount = Voter::where('has_voted', true)->whereNull('deleted_at')->count();
+        $totalVotes = Vote::count(); // Total number of votes cast
         $turnoutPercentage = $totalVoters > 0 ? round(($votedCount / $totalVoters) * 100, 1) : 0;
 
         // Clear voter session after showing results
         // Note: Session will persist until they navigate away or click logout
 
-        return view('voter-results', compact('positions', 'totalVoters', 'votedCount', 'turnoutPercentage'));
+        return view('voter-results', compact('positions', 'totalVoters', 'votedCount', 'totalVotes', 'turnoutPercentage'));
     }
 
     // Votes Table
