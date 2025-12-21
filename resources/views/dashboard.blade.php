@@ -255,7 +255,7 @@
 <body>
     <!-- Sidebar -->
     <div class="d-flex">
-    <div class="bg-dark text-white p-4" style="width: 250px; height: 100vh;">
+    <div class="bg-dark text-white p-4" style="width: 250px; height: auto;">
         <h4 class="text-center">Election System</h4>
         <hr>
         <ul class="nav flex-column">
