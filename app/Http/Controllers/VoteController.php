@@ -153,10 +153,18 @@ class VoteController extends Controller
         $totalVotes = Vote::count(); // Total number of votes cast
         $turnoutPercentage = $totalVoters > 0 ? round(($votedCount / $totalVoters) * 100, 1) : 0;
 
+        // Get voter's votes if logged in
+        $myVotes = collect();
+        if (Session::has('voter_id')) {
+            $myVotes = Vote::where('voter_id', Session::get('voter_id'))
+                ->with(['candidate.position'])
+                ->get();
+        }
+
         // Clear voter session after showing results
         // Note: Session will persist until they navigate away or click logout
 
-        return view('voter-results', compact('positions', 'totalVoters', 'votedCount', 'totalVotes', 'turnoutPercentage'));
+        return view('voter-results', compact('positions', 'totalVoters', 'votedCount', 'totalVotes', 'turnoutPercentage', 'myVotes'));
     }
 
     // Votes Table

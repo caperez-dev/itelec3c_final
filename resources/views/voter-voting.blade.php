@@ -585,8 +585,8 @@
                 </div>
             </div>
             <div class="voter-info">
-                <p>{{ session('voter_firstname') }} {{ session('voter_lastname') }}</p>
-                <p>Registered Voter</p>
+                <p>Hello, {{ session('voter_name') }}</p>
+                <p>Registered Student Voter</p>
             </div>
         </div>
     </header>

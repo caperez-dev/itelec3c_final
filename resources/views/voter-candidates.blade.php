@@ -418,7 +418,7 @@
             
             <div class="voter-info">
                 <div class="voter-details">
-                    <p>{{ session('voter_firstname') }} {{ session('voter_lastname') }}</p>
+                    <p>Hello, {{ session('voter_name') }}</p>
                     <p>Registered Student Voter</p>
                 </div>
                 <form method="POST" action="{{ route('voter.logout') }}">

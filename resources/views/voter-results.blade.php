@@ -74,6 +74,21 @@
             opacity: 0.9;
         }
 
+        .voter-details {
+            text-align: right;
+            margin-right: 1rem;
+        }
+
+        .voter-details p:first-child {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .voter-details p:last-child {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
         .logout-btn {
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -524,6 +539,132 @@
             font-size: 0.95rem;
         }
 
+        /* My Votes Section */
+        .my-votes-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .my-votes-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .my-votes-header svg {
+            width: 32px;
+            height: 32px;
+            color: #2563eb;
+        }
+
+        .my-votes-header h2 {
+            font-size: 1.5rem;
+            color: #1e293b;
+            font-weight: 700;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        .my-votes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .my-vote-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .my-vote-photo {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #cbd5e1;
+        }
+
+        .my-vote-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .my-vote-photo svg {
+            width: 28px;
+            height: 28px;
+            color: #94a3b8;
+        }
+
+        .my-vote-info {
+            flex: 1;
+        }
+
+        .my-vote-position {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .my-vote-candidate {
+            font-size: 1.125rem;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .my-vote-badge {
+            background: #2563eb;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .my-vote-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .no-votes-message {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+
+        .no-votes-message svg {
+            width: 48px;
+            height: 48px;
+            color: #cbd5e1;
+            margin: 0 auto 1rem;
+        }
+
+        .no-votes-message p {
+            font-size: 0.95rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header-container {
@@ -565,6 +706,15 @@
                 width: 100%;
                 justify-content: center;
             }
+
+            .my-vote-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .my-vote-badge {
+                align-self: flex-start;
+            }
         }
 
         @media (max-width: 480px) {
@@ -594,15 +744,24 @@
                     <p>Student Council Election</p>
                 </div>
             </div>
-            <form method="POST" action="{{ route('voter.logout') }}" style="display: inline;">
-                @csrf
-                <button type="submit" class="logout-btn">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                    Sign Out
-                </button>
-            </form>
+            
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                @if(session('voter_name'))
+                    <div class="voter-details">
+                        <p>Hello, {{ session('voter_name') }}</p>
+                        <p>Registered Student Voter</p>
+                    </div>
+                @endif
+                <form method="POST" action="{{ route('voter.logout') }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="logout-btn">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        Sign Out
+                    </button>
+                </form>
+            </div>
         </div>
     </header>
 
@@ -664,6 +823,53 @@
                 <div class="stat-description">Voter turnout rate</div>
             </div>
         </div>
+
+        <!-- My Votes Section -->
+        @if(session('voter_id'))
+            <div class="my-votes-section">
+                <div class="my-votes-header">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <h2>My Votes</h2>
+                </div>
+
+                @if(isset($myVotes) && $myVotes->count() > 0)
+                    <div class="my-votes-list">
+                        @foreach($myVotes as $vote)
+                            <div class="my-vote-item">
+                                <div class="my-vote-photo">
+                                    @if($vote->candidate->imagepath)
+                                        <img src="{{ asset('storage/' . $vote->candidate->imagepath) }}" alt="{{ $vote->candidate->candidate_name }}">
+                                    @else
+                                        <svg fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                    @endif
+                                </div>
+                                <div class="my-vote-info">
+                                    <div class="my-vote-position">{{ $vote->candidate->position->position_name }}</div>
+                                    <div class="my-vote-candidate">{{ $vote->candidate->candidate_name }}</div>
+                                </div>
+                                <div class="my-vote-badge">
+                                    <svg fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                    Voted
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="no-votes-message">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                        </svg>
+                        <p>No voting record found. You may not have voted yet.</p>
+                    </div>
+                @endif
+            </div>
+        @endif
 
         <!-- Results by Position -->
         @forelse($positions as $positionIndex => $position)

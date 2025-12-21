@@ -34,8 +34,6 @@ if (in_array($status, ['pending', 'ended', 'on hold'])) {
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
-<<<<<<< HEAD
-=======
             position: relative;
             overflow: auto;
         }
@@ -57,7 +55,6 @@ if (in_array($status, ['pending', 'ended', 'on hold'])) {
                         radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
             pointer-events: none;
             z-index: 1;
->>>>>>> 1f9dcd513ececccb3863e96ae1df87243e32751c
         }
 
         .login-container {

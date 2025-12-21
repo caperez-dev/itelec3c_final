@@ -18,14 +18,14 @@ class ElectionController extends Controller
     }
     
     /**
-     * Start the election (set status to 'Ongoing')
+     * Start the election (set status to 'ongoing')
      */
     public function start()
     {
         $election = Election::find(1);
         
         if ($election) {
-            $election->status = 'Ongoing';
+            $election->status = 'ongoing';
             $election->save();
             
             return redirect()->route('dashboard')->with('success', 'Election has been started successfully!');
@@ -35,14 +35,14 @@ class ElectionController extends Controller
     }
     
     /**
-     * Pause the election (set status to 'On Hold')
+     * Pause the election (set status to 'on hold')
      */
     public function pause()
     {
         $election = Election::find(1);
         
         if ($election) {
-            $election->status = 'On Hold';
+            $election->status = 'on hold';
             $election->save();
             
             return redirect()->route('dashboard')->with('success', 'Election has been paused.');
@@ -52,14 +52,14 @@ class ElectionController extends Controller
     }
     
     /**
-     * Resume the election (set status to 'Ongoing')
+     * Resume the election (set status to 'ongoing')
      */
     public function resume()
     {
         $election = Election::find(1);
         
         if ($election) {
-            $election->status = 'Ongoing';
+            $election->status = 'ongoing';
             $election->save();
             
             return redirect()->route('dashboard')->with('success', 'Election has been resumed.');
@@ -69,14 +69,14 @@ class ElectionController extends Controller
     }
     
     /**
-     * End the election (set status to 'Ended')
+     * End the election (set status to 'ended')
      */
     public function end()
     {
         $election = Election::find(1);
         
         if ($election) {
-            $election->status = 'Ended';
+            $election->status = 'ended';
             $election->save();
             
             return redirect()->route('dashboard')->with('success', 'Election has been ended.');
