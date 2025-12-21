@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Student Election System</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,30 +15,70 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(to bottom right, #f0f9ff, #fff, #f0f9ff);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f0f23 50%, #1a1a3e 75%, #0f172a 100%);
+            background-attachment: fixed;
             min-height: 100vh;
-            color: #333;
+            color: #fff;
+            position: relative;
+            overflow-x: hidden;
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(6, 182, 212, 0.3), 0 0 40px rgba(6, 182, 212, 0.15);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(6, 182, 212, 0.5), 0 0 60px rgba(6, 182, 212, 0.25);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes slide-up {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
         }
 
         @keyframes hover-lift {
             from { transform: translateY(0); }
-            to { transform: translateY(-4px); }
+            to { transform: translateY(-6px); }
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         /* Navigation */
         nav {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(6, 182, 212, 0.1);
             position: sticky;
             top: 0;
             z-index: 50;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
         }
 
         .nav-container {
@@ -59,13 +100,14 @@
         .nav-logo {
             width: 3rem;
             height: 3rem;
-            background: linear-gradient(to bottom right, #2563eb, #1d4ed8);
+            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
             border-radius: 0.75rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4), 0 8px 16px rgba(6, 182, 212, 0.2);
             position: relative;
+            animation: glow-pulse 3s ease-in-out infinite;
         }
 
         .nav-logo svg {
@@ -80,24 +122,27 @@
             right: -0.25rem;
             width: 1rem;
             height: 1rem;
-            background: #4ade80;
+            background: #10b981;
             border-radius: 50%;
             border: 2px solid #fff;
             animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
 
         .nav-title h1 {
             font-size: 1.375rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #1e3a8a, #1d4ed8);
+            font-weight: 800;
+            background: linear-gradient(to right, #06b6d4, #2563eb);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .nav-title p {
             font-size: 0.75rem;
-            color: #999;
+            color: #94a3b8;
+            letter-spacing: 0.05em;
         }
 
         .nav-status {
@@ -105,15 +150,16 @@
             align-items: center;
             gap: 0.5rem;
             font-size: 0.875rem;
-            color: #666;
+            color: #cbd5e1;
         }
 
         .nav-status-dot {
             width: 0.5rem;
             height: 0.5rem;
-            background: #4ade80;
+            background: #10b981;
             border-radius: 50%;
             animation: pulse 2s infinite;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
         }
 
         @media (min-width: 768px) {
@@ -131,7 +177,9 @@
         .bg-pattern {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05), transparent 70%);
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(6, 182, 212, 0.08), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(37, 99, 235, 0.08), transparent 50%);
             pointer-events: none;
         }
 
@@ -141,10 +189,11 @@
             right: 5rem;
             width: 24rem;
             height: 24rem;
-            background: rgba(191, 219, 254, 0.3);
+            background: rgba(6, 182, 212, 0.15);
             border-radius: 50%;
-            filter: blur(80px);
+            filter: blur(100px);
             pointer-events: none;
+            animation: float 6s ease-in-out infinite;
         }
 
         .bg-blob-2 {
@@ -153,10 +202,11 @@
             left: 5rem;
             width: 20rem;
             height: 20rem;
-            background: rgba(221, 214, 254, 0.3);
+            background: rgba(168, 85, 247, 0.12);
             border-radius: 50%;
-            filter: blur(80px);
+            filter: blur(100px);
             pointer-events: none;
+            animation: float 8s ease-in-out infinite reverse;
         }
 
         .main-wrapper {
@@ -172,19 +222,30 @@
         .hero-section {
             text-align: center;
             margin-bottom: 5rem;
+            animation: slide-up 0.8s ease-out;
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: #dbeafe;
-            color: #1d4ed8;
-            padding: 0.5rem 1rem;
+            background: rgba(6, 182, 212, 0.15);
+            backdrop-filter: blur(8px);
+            color: #06b6d4;
+            padding: 0.625rem 1.25rem;
+            border: 1px solid rgba(6, 182, 212, 0.3);
             border-radius: 9999px;
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 1.5rem;
+            letter-spacing: 0.05em;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .hero-badge:hover {
+            background: rgba(6, 182, 212, 0.25);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.4);
         }
 
         .hero-badge svg {
@@ -193,55 +254,84 @@
         }
 
         .hero-title {
-            font-size: 3.5rem;
+            font-size: 3.75rem;
             font-weight: 900;
-            color: #111;
+            color: #f1f5f9;
             margin-bottom: 1.5rem;
-            line-height: 1.2;
-            letter-spacing: -0.02em;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            font-family: 'Space Grotesk', sans-serif;
+            animation: slide-up 0.8s ease-out 0.1s both;
         }
 
         .hero-title-highlight {
-            background: linear-gradient(to right, #2563eb, #a855f7);
+            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 50%, #a855f7 100%);
+            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: gradient-shift 4s ease infinite;
         }
 
         .hero-subtitle {
-            font-size: 1.25rem;
-            color: #666;
+            font-size: 1.375rem;
+            color: #cbd5e1;
             max-width: 48rem;
             margin: 0 auto 2.5rem;
             line-height: 1.6;
+            animation: slide-up 0.8s ease-out 0.2s both;
         }
 
         .hero-button {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            padding: 1rem 2rem;
-            background: linear-gradient(to right, #2563eb, #1d4ed8);
+            gap: 0.75rem;
+            padding: 1.125rem 2.5rem;
+            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 50%, #a855f7 100%);
+            background-size: 200% 200%;
             color: #fff;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1rem;
             border-radius: 1.5rem;
             text-decoration: none;
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-            transition: all 0.3s ease;
-            border: none;
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.4), 0 15px 40px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: slide-up 0.8s ease-out 0.3s both;
+        }
+
+        .hero-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .hero-button:hover::before {
+            left: 100%;
         }
 
         .hero-button:hover {
-            box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.4);
+            box-shadow: 0 0 50px rgba(6, 182, 212, 0.6), 0 20px 60px rgba(37, 99, 235, 0.4);
             animation: hover-lift 0.3s ease forwards;
+            background-position: 100% 100%;
+            transform: translateY(-6px);
         }
 
         .hero-button svg {
             width: 1.25rem;
             height: 1.25rem;
             transition: transform 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
 
         .hero-button:hover svg:last-child {
@@ -263,16 +353,36 @@
         }
 
         .feature-card {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(0, 0, 0, 0.08);
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(6, 182, 212, 0.2);
             border-radius: 1.5rem;
             padding: 2rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+            position: relative;
+            overflow: hidden;
+            animation: slide-up 0.8s ease-out both;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.2s; }
+        .feature-card:nth-child(2) { animation-delay: 0.3s; }
+        .feature-card:nth-child(3) { animation-delay: 0.4s; }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.5), transparent);
         }
 
         .feature-card:hover {
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(6, 182, 212, 0.5);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.2), 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(-4px);
         }
 
         .feature-icon {
@@ -284,22 +394,27 @@
             justify-content: center;
             margin-bottom: 1.5rem;
             transition: transform 0.3s ease;
+            position: relative;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
         }
 
         .feature-card:hover .feature-icon {
-            transform: scale(1.1);
+            transform: scale(1.15) rotate(5deg);
         }
 
         .feature-icon-green {
-            background: linear-gradient(to bottom right, #4ade80, #22c55e);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
         }
 
         .feature-icon-blue {
-            background: linear-gradient(to bottom right, #60a5fa, #3b82f6);
+            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
         }
 
         .feature-icon-purple {
-            background: linear-gradient(to bottom right, #c084fc, #a855f7);
+            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
         }
 
         .feature-icon svg {
@@ -310,74 +425,124 @@
 
         .feature-title {
             font-size: 1.25rem;
-            font-weight: 700;
-            color: #111;
+            font-weight: 800;
+            color: #f1f5f9;
             margin-bottom: 0.75rem;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .feature-description {
-            color: #666;
+            color: #cbd5e1;
             font-size: 0.95rem;
+            line-height: 1.5;
         }
 
         /* Election Info Card */
         .election-card {
-            background: linear-gradient(to right, #2563eb, #a855f7);
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(37, 99, 235, 0.15) 50%, rgba(168, 85, 247, 0.15) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(6, 182, 212, 0.3);
             border-radius: 2rem;
-            padding: 2rem;
-            color: #fff;
+            padding: 3rem 2rem;
+            color: #f1f5f9;
             text-align: center;
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.2), 0 20px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: slide-up 0.8s ease-out 0.5s both;
+        }
+
+        .election-card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.8), transparent);
         }
 
         .election-title {
-            font-size: 1.875rem;
-            font-weight: 700;
+            font-size: 2rem;
+            font-weight: 900;
             margin-bottom: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(to right, #06b6d4, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .election-subtitle {
-            color: rgba(255, 255, 255, 0.9);
+            color: #cbd5e1;
             font-size: 1.125rem;
             margin-bottom: 1.5rem;
+            line-height: 1.6;
         }
 
         .election-info-grid {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.5rem;
             justify-content: center;
         }
 
         @media (min-width: 640px) {
             .election-info-grid {
                 flex-direction: row;
-                gap: 1rem;
+                gap: 2rem;
             }
         }
 
         .election-info-box {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(30, 41, 59, 0.6);
             backdrop-filter: blur(8px);
-            border-radius: 0.75rem;
-            padding: 1rem;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            flex: 1;
+        }
+
+        .election-info-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.5), transparent);
+        }
+
+        .election-info-box:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(6, 182, 212, 0.5);
+            transform: translateY(-4px);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
         }
 
         .election-info-date {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.75rem;
+            font-weight: 900;
+            color: #06b6d4;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .election-info-label {
             font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 0.25rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+            letter-spacing: 0.05em;
+            font-weight: 600;
         }
 
         /* Footer */
         footer {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(8px);
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(6, 182, 212, 0.1);
+            box-shadow: 0 -10px 30px -10px rgba(0, 0, 0, 0.5);
         }
 
         .footer-container {
@@ -388,18 +553,20 @@
         }
 
         .footer-text {
-            color: #666;
+            color: #cbd5e1;
             margin-bottom: 0.5rem;
+            font-weight: 500;
         }
 
         .footer-subtext {
             font-size: 0.875rem;
-            color: #999;
+            color: #64748b;
+            letter-spacing: 0.05em;
         }
 
         @media (max-width: 768px) {
             .hero-title {
-                font-size: 2.25rem;
+                font-size: 2.5rem;
             }
 
             .election-title {

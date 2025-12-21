@@ -3,9 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Election Results - Student Election System</title>
+    <title>Election Results - Premium Election System</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.8); }
+        }
+
+        @keyframes countdown {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,48 +41,71 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #1a0f2e 0%, #0f172a 50%, #4a1d6f 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(-45deg, #0f172a 0%, #1a0f2e 25%, #0d1f3c 50%, #1e1b4b 75%, #0f172a 100%);
+            background-size: 400% 400%;
+            animation: bgGradient 15s ease infinite;
             min-height: 100vh;
             color: #fff;
+            position: relative;
+        }
+
+        @keyframes bgGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+            pointer-events: none;
         }
 
         nav {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(32px);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 58, 138, 0.95) 100%);
+            backdrop-filter: blur(40px);
             position: sticky;
             top: 0;
             z-index: 50;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid rgba(34, 211, 238, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3),
+                        0 0 50px rgba(34, 211, 238, 0.1);
+            border-bottom: 1px solid rgba(34, 211, 238, 0.2);
         }
 
         .nav-container {
             max-width: 80rem;
             margin: 0 auto;
-            padding: 0 1rem;
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 4rem;
+            height: 5rem;
         }
 
         .nav-brand {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
         }
 
         .nav-logo {
-            width: 2.5rem;
-            height: 2.5rem;
-            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
-            border-radius: 0.75rem;
+            width: 3.25rem;
+            height: 3.25rem;
+            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 50%, #7c3aed 100%);
+            border-radius: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 20px 25px -5px rgba(6, 182, 212, 0.5);
-            transition: transform 0.3s ease;
+            box-shadow: 0 20px 40px rgba(6, 182, 212, 0.4);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
 
         .nav-logo:hover {
@@ -62,29 +113,31 @@
         }
 
         .nav-logo svg {
-            width: 1.5rem;
-            height: 1.5rem;
-            color: #e0f2fe;
+            width: 1.75rem;
+            height: 1.75rem;
+            color: #fff;
         }
 
         .nav-title h1 {
-            font-size: 1.125rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #67e8f9, #3b82f6);
+            font-size: 1.25rem;
+            font-weight: 900;
+            background: linear-gradient(to right, #a5f3fc, #3b82f6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: -0.5px;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .nav-title p {
             font-size: 0.75rem;
-            color: rgba(34, 211, 238, 0.7);
+            color: rgba(165, 243, 252, 0.6);
         }
 
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
         .nav-user {
@@ -92,246 +145,272 @@
             display: none;
         }
 
-        .nav-user p:first-child {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #e0f2fe;
-        }
+        @media (min-width: 640px) {
+            .nav-user {
+                display: block;
+            }
 
-        .nav-user p:last-child {
-            font-size: 0.75rem;
-            color: rgba(34, 211, 238, 0.7);
+            .nav-user p:first-child {
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: #e0f2fe;
+            }
+
+            .nav-user p:last-child {
+                font-size: 0.8rem;
+                color: rgba(165, 243, 252, 0.6);
+            }
         }
 
         .logout-btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            color: rgba(34, 211, 238, 0.8);
-            background: none;
-            border: none;
-            font-weight: 500;
-            font-size: 0.875rem;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+            gap: 0.7rem;
+            color: rgba(165, 243, 252, 0.8);
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(34, 211, 238, 0.05));
+            border: 1.5px solid rgba(34, 211, 238, 0.3);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.7rem 1.5rem;
+            border-radius: 0.875rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
         }
 
         .logout-btn:hover {
-            color: #e0f2fe;
-            background: rgba(34, 211, 238, 0.2);
-        }
-
-        .logout-btn svg {
-            width: 1rem;
-            height: 1rem;
-        }
-
-        @media (min-width: 640px) {
-            .nav-user {
-                display: block;
-            }
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(34, 211, 238, 0.1));
+            border-color: rgba(34, 211, 238, 0.6);
+            transform: translateY(-2px);
         }
 
         .main-container {
             max-width: 80rem;
             margin: 0 auto;
-            padding: 0 1rem;
-            padding-top: 3rem;
-            padding-bottom: 4rem;
+            padding: 2rem;
+            padding-top: 5rem;
+            padding-bottom: 6rem;
+            position: relative;
+            z-index: 10;
         }
 
         .success-banner {
-            background: linear-gradient(to right, rgba(5, 150, 105, 0.4), rgba(5, 150, 105, 0.5));
-            border: 2px solid rgba(16, 185, 129, 0.6);
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.2), rgba(16, 185, 129, 0.15));
+            border: 2px solid rgba(16, 185, 129, 0.5);
+            border-radius: 1.75rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: flex-start;
-            gap: 1rem;
+            gap: 1.5rem;
+            backdrop-filter: blur(20px);
+            animation: slideUp 0.8s ease-out;
         }
 
         .success-icon {
             flex-shrink: 0;
-            width: 2.5rem;
-            height: 2.5rem;
+            width: 3rem;
+            height: 3rem;
             background: rgba(16, 185, 129, 0.3);
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(16, 185, 129, 0.5);
+            border: 2px solid rgba(16, 185, 129, 0.5);
         }
 
         .success-icon svg {
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 1.75rem;
+            height: 1.75rem;
             color: rgba(16, 185, 129, 0.8);
+            animation: float 3s ease-in-out infinite;
         }
 
         .success-content h3 {
-            color: rgba(16, 185, 129, 0.9);
-            font-weight: 700;
-            margin-bottom: 0.25rem;
+            color: rgba(16, 185, 129, 0.95);
+            font-weight: 800;
+            margin-bottom: 0.35rem;
+            font-size: 1.15rem;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .success-content p {
             color: #a7f3d0;
-            font-size: 0.875rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
 
         .page-header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
+            animation: slideUp 0.8s ease-out 0.1s both;
         }
 
         .header-icon {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 4rem;
-            height: 4rem;
-            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
-            border-radius: 1rem;
-            box-shadow: 0 25px 50px -12px rgba(6, 182, 212, 0.5);
-            margin-bottom: 1.5rem;
-            transition: transform 0.3s ease;
+            width: 5.5rem;
+            height: 5.5rem;
+            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 50%, #7c3aed 100%);
+            border-radius: 1.5rem;
+            box-shadow: 0 30px 60px rgba(6, 182, 212, 0.4),
+                        inset 0 0 30px rgba(255, 255, 255, 0.15);
+            margin-bottom: 2rem;
+            transition: all 0.4s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            animation: float 4s ease-in-out infinite;
         }
 
         .header-icon:hover {
-            transform: scale(1.1);
+            transform: scale(1.15);
         }
 
         .header-icon svg {
-            width: 2rem;
-            height: 2rem;
-            color: #e0f2fe;
+            width: 2.75rem;
+            height: 2.75rem;
+            color: #fff;
         }
 
         .page-title {
             font-size: 3.5rem;
             font-weight: 900;
-            background: linear-gradient(to right, #cffafe, #93c5fd);
+            background: linear-gradient(to right, #cffafe, #a5f3fc, #93c5fd);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .page-subtitle {
-            font-size: 1.125rem;
-            color: rgba(34, 211, 238, 0.8);
+            font-size: 1.2rem;
+            color: rgba(165, 243, 252, 0.85);
+            font-weight: 500;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 2rem;
             margin-bottom: 4rem;
-        }
-
-        @media (min-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            animation: slideUp 0.8s ease-out 0.2s both;
         }
 
         .stat-card {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border-radius: 1.75rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3),
+                        0 0 20px rgba(34, 211, 238, 0.1);
             padding: 2rem;
-            border: 2px solid rgba(34, 211, 238, 0.4);
+            border: 2px solid rgba(34, 211, 238, 0.3);
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: space-between;
             gap: 2rem;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
         }
 
         .stat-card:hover {
-            border-color: rgba(34, 211, 238, 0.8);
-            box-shadow: 0 20px 25px -5px rgba(6, 182, 212, 0.3);
-            transform: translateY(-4px);
+            border-color: rgba(34, 211, 238, 0.7);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4),
+                        0 0 40px rgba(34, 211, 238, 0.2);
+            transform: translateY(-8px);
         }
 
         .stat-content p:first-child {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: rgba(34, 211, 238, 0.8);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: rgba(165, 243, 252, 0.7);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
+            letter-spacing: 0.8px;
+            margin-bottom: 0.75rem;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .stat-number {
-            font-size: 3rem;
+            font-size: 2.75rem;
             font-weight: 900;
-            margin-bottom: 0.25rem;
-            margin-top: 0.5rem;
+            color: rgba(165, 243, 252, 0.95);
+            margin-bottom: 0.35rem;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: -1px;
         }
 
         .stat-description {
-            font-size: 0.875rem;
-            color: rgba(34, 211, 238, 0.6);
+            font-size: 0.9rem;
+            color: rgba(165, 243, 252, 0.6);
+            font-weight: 500;
         }
 
         .stat-icon {
-            width: 4rem;
-            height: 4rem;
-            border-radius: 1rem;
+            width: 4.5rem;
+            height: 4.5rem;
+            border-radius: 1.25rem;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            border: 1px solid;
-        }
-
-        .stat-icon svg {
-            width: 2rem;
-            height: 2rem;
-        }
-
-        .cyan-stat { border-color: rgba(34, 211, 238, 0.5); background: rgba(34, 211, 238, 0.3); }
-        .cyan-stat svg { color: rgba(34, 211, 238, 0.8); }
-        .cyan-text { color: rgba(34, 211, 238, 0.9); }
-
-        .emerald-stat { border-color: rgba(16, 185, 129, 0.5); background: rgba(16, 185, 129, 0.3); }
-        .emerald-stat svg { color: rgba(16, 185, 129, 0.8); }
-        .emerald-text { color: rgba(16, 185, 129, 0.9); }
-
-        .indigo-stat { border-color: rgba(79, 70, 229, 0.5); background: rgba(79, 70, 229, 0.3); }
-        .indigo-stat svg { color: rgba(79, 70, 229, 0.8); }
-        .indigo-text { color: rgba(79, 70, 229, 0.9); }
-
-        .position-section {
-            margin-bottom: 5rem;
-        }
-
-        .position-header {
-            background: linear-gradient(to right, #06b6d4, #3b82f6, #4f46e5);
-            border-radius: 1.5rem;
-            box-shadow: 0 25px 50px -12px rgba(6, 182, 212, 0.4);
-            padding: 2rem;
-            margin-bottom: 2.5rem;
-            position: relative;
-            overflow: hidden;
+            border: 2px solid;
             transition: all 0.3s ease;
         }
 
+        .stat-icon svg {
+            width: 2.25rem;
+            height: 2.25rem;
+        }
+
+        .cyan-stat { 
+            border-color: rgba(34, 211, 238, 0.5); 
+            background: rgba(34, 211, 238, 0.15); 
+        }
+        .cyan-stat svg { color: rgba(34, 211, 238, 0.8); }
+
+        .emerald-stat { 
+            border-color: rgba(16, 185, 129, 0.5); 
+            background: rgba(16, 185, 129, 0.15); 
+        }
+        .emerald-stat svg { color: rgba(16, 185, 129, 0.8); }
+
+        .indigo-stat { 
+            border-color: rgba(79, 70, 229, 0.5); 
+            background: rgba(79, 70, 229, 0.15); 
+        }
+        .indigo-stat svg { color: rgba(79, 70, 229, 0.8); }
+
+        .position-section {
+            margin-bottom: 5rem;
+            animation: slideUp 0.8s ease-out both;
+        }
+
+        .position-header {
+            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 40%, #4f46e5 100%);
+            border-radius: 2rem;
+            box-shadow: 0 30px 60px rgba(6, 182, 212, 0.3);
+            padding: 3rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+        }
+
         .position-header:hover {
-            box-shadow: 0 25px 50px -12px rgba(6, 182, 212, 0.6);
+            transform: translateY(-8px);
+            box-shadow: 0 40px 80px rgba(6, 182, 212, 0.4);
         }
 
         .position-header::before {
             content: '';
             position: absolute;
-            inset: 0;
-            opacity: 0.1;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            top: -50%;
+            right: -50%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
         }
 
         .position-header-content {
@@ -343,7 +422,7 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
         }
 
         .position-number {
@@ -352,113 +431,93 @@
             justify-content: center;
             width: 3rem;
             height: 3rem;
-            background: rgba(34, 211, 238, 0.3);
-            border-radius: 0.5rem;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(34, 211, 238, 0.5);
-            font-weight: 700;
-            color: rgba(34, 211, 238, 0.9);
-            font-size: 1.25rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.35rem;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .position-label {
             display: inline-block;
-            padding: 0.5rem 1rem;
-            background: rgba(34, 211, 238, 0.2);
+            padding: 0.4rem 1rem;
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 9999px;
-            color: #e0f2fe;
-            font-size: 0.875rem;
-            font-weight: 600;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(34, 211, 238, 0.4);
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .position-title {
-            font-size: 2.25rem;
-            font-weight: 700;
-            color: rgba(34, 211, 238, 0.9);
-            margin-bottom: 0.75rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 2rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .position-description {
-            color: #f8fafc;
-            font-size: 1.125rem;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
         }
 
         .results-space {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.6), rgba(30, 58, 138, 0.4));
+            border-radius: 1.75rem;
+            padding: 2.5rem;
+            backdrop-filter: blur(20px);
+            border: 1.5px solid rgba(34, 211, 238, 0.3);
         }
 
         .candidate-result {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-            border-radius: 1.5rem;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1));
+            border: 2px solid rgba(34, 211, 238, 0.3);
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+            position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .candidate-result:hover {
+            border-color: rgba(34, 211, 238, 0.6);
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(34, 211, 238, 0.05));
+            transform: translateX(8px);
+        }
+
+        .candidate-result.leading {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+            border-color: rgba(16, 185, 129, 0.6);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
+        }
+
+        .candidate-photo {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 0.875rem;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f172a, #1e3a8a);
             border: 2px solid rgba(34, 211, 238, 0.4);
             transition: all 0.3s ease;
         }
 
-        .candidate-result.leading {
-            border-color: rgba(250, 204, 21, 0.8);
-            box-shadow: 0 25px 50px -12px rgba(250, 204, 21, 0.3);
-        }
-
-        .candidate-result:hover {
-            box-shadow: 0 20px 25px -5px rgba(6, 182, 212, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .result-content {
-            padding: 2rem;
-            display: flex;
-            align-items: flex-start;
-            gap: 2rem;
-        }
-
-        .leading-badge {
-            flex-shrink: 0;
-            width: 3.5rem;
-            height: 3.5rem;
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 15px -3px rgba(250, 204, 21, 0.4);
-            animation: bounce 2s infinite;
-        }
-
-        .leading-badge svg {
-            width: 1.75rem;
-            height: 1.75rem;
-            color: #fff;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        .candidate-photo {
-            flex-shrink: 0;
-            width: 5rem;
-            height: 5rem;
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-            border-radius: 1rem;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(34, 211, 238, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.3s ease;
-        }
-
         .candidate-result:hover .candidate-photo {
-            transform: scale(1.1);
+            transform: scale(1.08);
+            border-color: rgba(34, 211, 238, 0.7);
         }
 
         .candidate-photo img {
@@ -468,9 +527,9 @@
         }
 
         .candidate-photo svg {
-            width: 2.5rem;
-            height: 2.5rem;
-            color: #475569;
+            width: 2rem;
+            height: 2rem;
+            color: rgba(34, 211, 238, 0.6);
         }
 
         .candidate-info {
@@ -478,252 +537,217 @@
         }
 
         .candidate-info h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: rgba(34, 211, 238, 0.9);
-            margin-bottom: 0.25rem;
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: rgba(165, 243, 252, 0.95);
+            margin-bottom: 0.35rem;
+            letter-spacing: -0.3px;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .candidate-info p {
-            font-size: 0.875rem;
-            color: rgba(34, 211, 238, 0.6);
-            margin-bottom: 0.5rem;
-        }
-
-        .candidate-info .leading-text {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: rgba(250, 204, 21, 0.3);
-            color: rgba(250, 204, 21, 0.9);
-            font-size: 0.75rem;
-            font-weight: 700;
-            border-radius: 0.5rem;
-            border: 1px solid rgba(250, 204, 21, 0.5);
-            margin-left: 0.5rem;
+            color: rgba(148, 163, 184, 0.8);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
         }
 
         .vote-stats {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             gap: 2rem;
-            text-align: right;
         }
 
         .vote-count {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+            text-align: center;
         }
 
         .vote-number {
-            font-size: 2.5rem;
+            font-size: 1.75rem;
             font-weight: 900;
-            line-height: 1;
+            color: rgba(165, 243, 252, 0.95);
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .leading .vote-number {
-            color: rgba(250, 204, 21, 0.9);
+            color: rgba(16, 185, 129, 0.95);
+            animation: pulse-glow 2s ease-in-out infinite;
         }
 
         .vote-label {
-            font-size: 0.75rem;
-            color: rgba(148, 163, 184, 0.8);
-            margin-top: 0.25rem;
+            font-size: 0.8rem;
+            color: rgba(148, 163, 184, 0.7);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .progress-bar-container {
-            padding: 0 2rem 2rem;
+            flex: 1;
+            min-width: 150px;
         }
 
         .progress-label {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: rgba(34, 211, 238, 0.8);
-            margin-bottom: 0.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-label span:first-child {
+            color: rgba(165, 243, 252, 0.8);
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
         .progress-percentage {
+            color: rgba(148, 163, 184, 0.7);
+            font-size: 0.85rem;
             font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .leading .progress-percentage {
-            color: rgba(250, 204, 21, 0.9);
+            color: rgba(16, 185, 129, 0.8);
         }
 
         .progress-bar {
-            width: 100%;
             height: 0.75rem;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(34, 211, 238, 0.2);
             border-radius: 9999px;
             overflow: hidden;
-            border: 1px solid rgba(34, 211, 238, 0.2);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(34, 211, 238, 0.3);
         }
 
         .progress-fill {
             height: 100%;
+            background: linear-gradient(90deg, #06b6d4, #2563eb);
             border-radius: 9999px;
-            background: linear-gradient(to right, #06b6d4, #0891b2);
-            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
-            transition: width 1s ease-out;
+            transition: width 1s cubic-bezier(0.23, 1, 0.320, 1);
+            animation: countdown 1s ease-out;
         }
 
         .leading .progress-fill {
-            background: linear-gradient(to right, #fbbf24, #f59e0b);
-            box-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
-        }
-
-        .position-summary {
-            background: linear-gradient(to right, rgba(8, 51, 68, 0.3), rgba(30, 58, 138, 0.3));
-            border-left: 4px solid rgba(34, 211, 238, 0.8);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 2rem;
-        }
-
-        .summary-label {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: rgba(34, 211, 238, 0.8);
-        }
-
-        .summary-label svg {
-            width: 1.5rem;
-            height: 1.5rem;
-            color: rgba(34, 211, 238, 0.8);
-        }
-
-        .summary-label strong {
-            color: rgba(34, 211, 238, 0.9);
-            font-weight: 700;
-        }
-
-        .summary-count {
-            font-size: 1.875rem;
-            font-weight: 900;
-            color: rgba(34, 211, 238, 0.9);
+            background: linear-gradient(90deg, #10b981, #059669);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
         }
 
         .no-results {
-            background: rgba(15, 23, 42, 0.5);
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.05), rgba(99, 102, 241, 0.05));
             border: 2px dashed rgba(34, 211, 238, 0.3);
-            border-radius: 1.5rem;
-            padding: 4rem 2rem;
+            border-radius: 1.75rem;
+            padding: 3rem;
             text-align: center;
+            backdrop-filter: blur(20px);
         }
 
         .no-results svg {
-            width: 5rem;
-            height: 5rem;
-            color: #475569;
+            width: 3.5rem;
+            height: 3.5rem;
+            color: rgba(34, 211, 238, 0.4);
             margin: 0 auto 1rem;
         }
 
         .no-results p:first-of-type {
-            font-weight: 600;
-            color: #cbd5e1;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: rgba(165, 243, 252, 0.8);
             margin-bottom: 0.5rem;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .no-results p:last-of-type {
-            color: #94a3b8;
-        }
-
-        .no-positions {
-            background: rgba(79, 70, 229, 0.4);
-            border: 2px solid rgba(79, 70, 229, 0.6);
-            border-radius: 1.5rem;
-            padding: 3rem;
-            text-align: center;
-        }
-
-        .no-positions-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 4rem;
-            height: 4rem;
-            background: rgba(79, 70, 229, 0.3);
-            border-radius: 9999px;
-            margin-bottom: 1.5rem;
-        }
-
-        .no-positions-icon svg {
-            width: 2rem;
-            height: 2rem;
-            color: #c7d2fe;
-        }
-
-        .no-positions h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #e0e7ff;
-            margin-bottom: 0.5rem;
-        }
-
-        .no-positions p {
-            color: #a5b4fc;
+            color: rgba(165, 243, 252, 0.6);
+            font-size: 1rem;
         }
 
         .home-button-container {
             text-align: center;
-            margin-top: 4rem;
+            margin-top: 5rem;
+            animation: slideUp 0.8s ease-out 0.4s both;
         }
 
         .home-button {
             display: inline-flex;
             align-items: center;
-            gap: 0.75rem;
-            background: linear-gradient(to right, #06b6d4, #2563eb);
-            color: #e0f2fe;
-            font-weight: 700;
-            font-size: 1.125rem;
-            padding: 1rem 2.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 25px 50px -12px rgba(6, 182, 212, 0.5);
+            gap: 1rem;
+            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 50%, #7c3aed 100%);
+            color: #fff;
             text-decoration: none;
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s ease;
+            font-weight: 900;
+            font-size: 1.15rem;
+            padding: 1.25rem 2.75rem;
+            border-radius: 1.15rem;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+            box-shadow: 0 20px 50px rgba(6, 182, 212, 0.35);
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .home-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .home-button:hover::before {
+            left: 100%;
         }
 
         .home-button:hover {
-            background: linear-gradient(to right, #06a6d4, #1d4ed8);
-            box-shadow: 0 25px 50px -12px rgba(6, 182, 212, 0.7);
-            transform: scale(1.05);
+            transform: translateY(-6px);
+            box-shadow: 0 30px 70px rgba(6, 182, 212, 0.5);
+        }
+
+        .home-button:active {
+            transform: translateY(-2px);
         }
 
         .home-button svg {
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 1.4rem;
+            height: 1.4rem;
         }
 
         @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1.5rem;
+            }
+
+            .main-container {
+                padding: 1.5rem;
+                padding-top: 4rem;
+            }
+
             .page-title {
-                font-size: 2.25rem;
+                font-size: 2.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .vote-stats {
+                flex-direction: column;
+            }
+
+            .position-header {
+                padding: 2rem 1.5rem;
             }
 
             .position-title {
                 font-size: 1.5rem;
-            }
-
-            .result-content {
-                flex-direction: column;
-            }
-
-            .vote-stats {
-                width: 100%;
-                justify-content: space-between;
             }
         }
     </style>
@@ -739,27 +763,25 @@
                     </svg>
                 </div>
                 <div class="nav-title">
-                    <h1>Election System</h1>
+                    <h1>Election Results</h1>
                     <p>Live Results</p>
                 </div>
             </div>
-            @if(session('voter_firstname'))
-                <div class="nav-right">
-                    <div class="nav-user">
-                        <p>{{ session('voter_firstname') }} {{ session('voter_lastname') }}</p>
-                        <p>Your vote has been counted</p>
-                    </div>
-                    <form method="POST" action="{{ route('voter.logout') }}" style="display: inline;">
-                        @csrf
-                        <button type="submit" class="logout-btn">
-                            <svg fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                            </svg>
-                            Logout
-                        </button>
-                    </form>
+            <div class="nav-right">
+                <div class="nav-user">
+                    <p>Results Dashboard</p>
+                    <p>Real-time Updates</p>
                 </div>
-            @endif
+                <form method="POST" action="{{ route('voter.logout') }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="logout-btn">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 1.1rem; height: 1.1rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Logout
+                    </button>
+                </form>
+            </div>
         </div>
     </nav>
 
@@ -774,7 +796,7 @@
                     </svg>
                 </div>
                 <div class="success-content">
-                    <h3>Vote Submitted Successfully!</h3>
+                    <h3>Vote Submitted Successfully</h3>
                     <p>{{ session('success') }}</p>
                 </div>
             </div>
@@ -788,46 +810,46 @@
                 </svg>
             </div>
             <h1 class="page-title">Election Results</h1>
-            <p class="page-subtitle">Live results from the ongoing election. Results are updated in real-time.</p>
+            <p class="page-subtitle">Real-time voting results and analytics</p>
         </div>
 
         <!-- Statistics Summary -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-content">
-                    <p>Total Voters</p>
-                    <div class="stat-number cyan-text">{{ $totalVoters }}</div>
-                    <p class="stat-description">Registered voters</p>
+                    <p>Total Votes Cast</p>
+                    <div class="stat-number">{{ $totalVotes }}</div>
+                    <div class="stat-description">Registered voters participated</div>
                 </div>
                 <div class="stat-icon cyan-stat">
-                    <svg fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
                     </svg>
                 </div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-content">
-                    <p>Votes Cast</p>
-                    <div class="stat-number emerald-text">{{ $votedCount }}</div>
-                    <p class="stat-description">Votes submitted</p>
+                    <p>Positions</p>
+                    <div class="stat-number">{{ $positions->count() }}</div>
+                    <div class="stat-description">Voting positions available</div>
                 </div>
                 <div class="stat-icon emerald-stat">
-                    <svg fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8c0 1.657-.895 3.09-2.223 3.859V17H8v-5.141C6.895 11.09 6 9.657 6 8a4 4 0 118 0zM8 17v2a1 1 0 001 1h6a1 1 0 001-1v-2"/>
                     </svg>
                 </div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-content">
-                    <p>Turnout</p>
-                    <div class="stat-number indigo-text">{{ $turnoutPercentage }}%</div>
-                    <p class="stat-description">Voter participation</p>
+                    <p>Participation Rate</p>
+                    <div class="stat-number">{{ round(($totalVotes / max($totalVoters, 1)) * 100) }}%</div>
+                    <div class="stat-description">Of eligible voters</div>
                 </div>
                 <div class="stat-icon indigo-stat">
-                    <svg fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                 </div>
             </div>
@@ -835,136 +857,100 @@
 
         <!-- Results by Position -->
         @forelse($positions as $positionIndex => $position)
-            <div class="position-section">
+            <div class="position-section" style="animation-delay: {{ $positionIndex * 0.1 }}s;">
                 <!-- Position Header -->
                 <div class="position-header">
                     <div class="position-header-content">
                         <div class="position-badges">
                             <div class="position-number">{{ $positionIndex + 1 }}</div>
-                            <span class="position-label">POSITION</span>
+                            <span class="position-label">Position</span>
                         </div>
-                        <h2 class="position-title">{{ $position->title }}</h2>
+                        <h2 class="position-title">{{ $position->position_name }}</h2>
                         @if($position->description)
                             <p class="position-description">{{ $position->description }}</p>
                         @endif
                     </div>
                 </div>
 
+                <!-- Results -->
                 @php
-                    $candidates = $position->candidates;
-                    $voteCounts = $position->voteCounts;
-                    $totalVotesForPosition = $voteCounts->sum('vote_count');
+                    $voteData = $position->voteCount;
+                    $maxVotes = $voteData->max('vote_count') ?? 0;
+                    $leadingCandidate = $voteData->where('vote_count', $maxVotes)->first();
                 @endphp
 
-                <!-- Results Cards -->
-                @if($candidates->count() > 0)
-                    <div class="results-space">
-                        @foreach($candidates->sortByDesc(function($candidate) use ($voteCounts) {
-                            return $voteCounts->where('candidate_id', $candidate->candidate_id)->first()?->vote_count ?? 0;
-                        }) as $rank => $candidate)
+                <div class="results-space">
+                    @if($voteData->count() > 0)
+                        @foreach($voteData->sortByDesc('vote_count') as $voteCount)
                             @php
-                                $voteCount = $voteCounts->where('candidate_id', $candidate->candidate_id)->first();
-                                $votes = $voteCount ? $voteCount->vote_count : 0;
-                                $percentage = $totalVotesForPosition > 0 ? round(($votes / $totalVotesForPosition) * 100, 1) : 0;
-                                $isLeading = $rank === 0 && $votes > 0;
+                                $percentage = $maxVotes > 0 ? ($voteCount->vote_count / $maxVotes) * 100 : 0;
+                                $isLeading = $voteCount->id === $leadingCandidate?->id;
                             @endphp
-
                             <div class="candidate-result {{ $isLeading ? 'leading' : '' }}">
-                                <div class="result-content">
-                                    @if($isLeading)
-                                        <div class="leading-badge">
-                                            <svg fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                            </svg>
-                                        </div>
+                                <div class="candidate-photo">
+                                    @if($voteCount->candidate && $voteCount->candidate->imagepath)
+                                        <img src="{{ asset('storage/' . $voteCount->candidate->imagepath) }}" alt="{{ $voteCount->candidate->candidate_name }}">
+                                    @else
+                                        <svg fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
                                     @endif
-
-                                    <!-- Candidate Photo -->
-                                    <div class="candidate-photo">
-                                        @if($candidate->imagepath)
-                                            <img src="{{ asset('storage/' . $candidate->imagepath) }}" alt="{{ $candidate->firstname }} {{ $candidate->lastname }}">
-                                        @else
-                                            <svg fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                            </svg>
-                                        @endif
-                                    </div>
-
-                                    <div class="candidate-info">
-                                        <h3>
-                                            {{ $candidate->firstname }} {{ $candidate->lastname }}
-                                            @if($isLeading)
-                                                <span class="leading-text">Leading</span>
-                                            @endif
-                                        </h3>
-                                        <p>{{ $position->title }}</p>
-                                        @if($candidate->description)
-                                            <p style="margin-top: 0.5rem; color: rgba(34, 211, 238, 0.7); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $candidate->description }}</p>
-                                        @endif
-                                    </div>
-
-                                    <div class="vote-stats">
-                                        <div class="vote-count">
-                                            <div class="vote-number{{ $isLeading ? ' leading' : '' }}">{{ $votes }}</div>
-                                            <p class="vote-label">{{ $votes === 1 ? 'vote' : 'votes' }}</p>
-                                        </div>
-                                    </div>
                                 </div>
-
-                                <!-- Vote Percentage Bar -->
-                                <div class="progress-bar-container">
-                                    <div class="progress-label">
-                                        <span>Vote Share</span>
-                                        <span class="progress-percentage{{ $isLeading ? ' leading' : '' }}">{{ $percentage }}%</span>
+                                <div class="candidate-info">
+                                    <h3>{{ $voteCount->candidate->candidate_name ?? 'Abstain' }}</h3>
+                                    @if($voteCount->candidate)
+                                        <p>{{ $position->position_name }}</p>
+                                    @endif
+                                </div>
+                                <div class="vote-stats">
+                                    <div class="vote-count">
+                                        <div class="vote-number">{{ $voteCount->vote_count }}</div>
+                                        <div class="vote-label">Votes</div>
                                     </div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: {{ $percentage }}%"></div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-label">
+                                            <span>Vote Share</span>
+                                            <span class="progress-percentage">{{ round($percentage) }}%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: {{ $percentage }}%"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
-                    </div>
-
-                    <!-- Position Summary -->
-                    <div class="position-summary">
-                        <div class="summary-label">
-                            <svg fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    @else
+                        <div class="no-results">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                             </svg>
-                            <span>Total Votes for <strong>{{ $position->title }}</strong>:</span>
+                            <p>No votes recorded</p>
+                            <p>This position has not received any votes yet</p>
                         </div>
-                        <span class="summary-count">{{ $totalVotesForPosition }}</span>
-                    </div>
-                @else
-                    <div class="no-results">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-                        </svg>
-                        <p>No candidates for this position</p>
-                        <p>Results will appear here once votes are cast</p>
-                    </div>
-                @endif
+                    @endif
+                </div>
             </div>
         @empty
-            <div class="no-positions">
-                <div class="no-positions-icon">
-                    <svg fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                    </svg>
-                </div>
-                <h3>No Results Available</h3>
-                <p>No positions or results are available yet. Please check back later.</p>
+            <div style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(139, 92, 246, 0.1)); border: 2px solid rgba(99, 102, 241, 0.3); border-radius: 2rem; padding: 4rem 2rem; text-align: center; backdrop-filter: blur(20px);">
+                <svg fill="currentColor" viewBox="0 0 24 24" style="width: 4rem; height: 4rem; color: rgba(99, 102, 241, 0.6); margin: 0 auto 1.5rem;">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+                <h3 style="font-size: 1.5rem; font-weight: 900; color: rgba(165, 243, 252, 0.8); margin-bottom: 0.75rem; font-family: 'Space Grotesk', sans-serif;">No Results Available</h3>
+                <p style="color: rgba(165, 243, 252, 0.6); font-size: 1rem;">Results will appear here as votes are submitted</p>
             </div>
         @endforelse
 
-        <!-- Back to Home Button -->
+        <!-- Home Button -->
         <div class="home-button-container">
-            <a href="{{ route('welcome') }}" class="home-button">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                </svg>
-                Back to Home
-            </a>
+            <form method="POST" action="{{ route('voter.logout') }}" style="display: inline;">
+                @csrf
+                <button type="submit" class="home-button">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Exit & Logout
+                </button>
+            </form>
         </div>
     </div>
 </body>
