@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Student Election System</title>
+    <title>Student Council Election System</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,80 +15,30 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f0f23 50%, #1a1a3e 75%, #0f172a 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
-            color: #fff;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        @keyframes glow-pulse {
-            0%, 100% { 
-                box-shadow: 0 0 20px rgba(6, 182, 212, 0.3), 0 0 40px rgba(6, 182, 212, 0.15);
-            }
-            50% { 
-                box-shadow: 0 0 30px rgba(6, 182, 212, 0.5), 0 0 60px rgba(6, 182, 212, 0.25);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes slide-up {
-            from { 
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to { 
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
-        }
-
-        @keyframes hover-lift {
-            from { transform: translateY(0); }
-            to { transform: translateY(-6px); }
-        }
-
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
         }
 
         /* Navigation */
-        nav {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(6, 182, 212, 0.1);
+        .election-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
-            z-index: 50;
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            z-index: 100;
         }
 
         .nav-container {
-            max-width: 80rem;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 1rem;
+            padding: 0 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 5rem;
         }
 
         .nav-brand {
@@ -98,252 +48,150 @@
         }
 
         .nav-logo {
-            width: 3rem;
-            height: 3rem;
-            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
-            border-radius: 0.75rem;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4), 0 8px 16px rgba(6, 182, 212, 0.2);
-            position: relative;
-            animation: glow-pulse 3s ease-in-out infinite;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .nav-logo svg {
-            width: 1.75rem;
-            height: 1.75rem;
-            color: #fff;
-        }
-
-        .nav-pulse {
-            position: absolute;
-            top: -0.25rem;
-            right: -0.25rem;
-            width: 1rem;
-            height: 1rem;
-            background: #10b981;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+            width: 24px;
+            height: 24px;
+            color: #1e3a8a;
         }
 
         .nav-title h1 {
-            font-size: 1.375rem;
-            font-weight: 800;
-            background: linear-gradient(to right, #06b6d4, #2563eb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Source Sans Pro', sans-serif;
         }
 
         .nav-title p {
             font-size: 0.75rem;
-            color: #94a3b8;
-            letter-spacing: 0.05em;
+            opacity: 0.9;
         }
 
         .nav-status {
-            display: none;
+            display: flex;
             align-items: center;
             gap: 0.5rem;
             font-size: 0.875rem;
-            color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .nav-status-dot {
-            width: 0.5rem;
-            height: 0.5rem;
+        .status-dot {
+            width: 8px;
+            height: 8px;
             background: #10b981;
             border-radius: 50%;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
         }
 
-        @media (min-width: 768px) {
-            .nav-status {
-                display: flex;
-            }
-        }
-
-        /* Main Section */
+        /* Main Content */
         main {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .bg-pattern {
-            position: absolute;
-            inset: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(6, 182, 212, 0.08), transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(37, 99, 235, 0.08), transparent 50%);
-            pointer-events: none;
-        }
-
-        .bg-blob-1 {
-            position: absolute;
-            top: 5rem;
-            right: 5rem;
-            width: 24rem;
-            height: 24rem;
-            background: rgba(6, 182, 212, 0.15);
-            border-radius: 50%;
-            filter: blur(100px);
-            pointer-events: none;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .bg-blob-2 {
-            position: absolute;
-            bottom: 5rem;
-            left: 5rem;
-            width: 20rem;
-            height: 20rem;
-            background: rgba(168, 85, 247, 0.12);
-            border-radius: 50%;
-            filter: blur(100px);
-            pointer-events: none;
-            animation: float 8s ease-in-out infinite reverse;
-        }
-
-        .main-wrapper {
-            max-width: 80rem;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 1rem;
-            padding-top: 5rem;
-            position: relative;
-            z-index: 10;
+            padding: 2rem 1.5rem;
         }
 
         /* Hero Section */
         .hero-section {
             text-align: center;
-            margin-bottom: 5rem;
-            animation: slide-up 0.8s ease-out;
+            padding: 3rem 1rem;
+            margin-bottom: 3rem;
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(6, 182, 212, 0.15);
-            backdrop-filter: blur(8px);
-            color: #06b6d4;
-            padding: 0.625rem 1.25rem;
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            border-radius: 9999px;
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
             font-size: 0.875rem;
-            font-weight: 700;
+            font-weight: 600;
             margin-bottom: 1.5rem;
-            letter-spacing: 0.05em;
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .hero-badge:hover {
-            background: rgba(6, 182, 212, 0.25);
-            box-shadow: 0 0 30px rgba(6, 182, 212, 0.4);
+            border: 1px solid #dbeafe;
         }
 
         .hero-badge svg {
-            width: 1rem;
-            height: 1rem;
+            width: 16px;
+            height: 16px;
         }
 
         .hero-title {
-            font-size: 3.75rem;
-            font-weight: 900;
-            color: #f1f5f9;
-            margin-bottom: 1.5rem;
-            line-height: 1.1;
-            letter-spacing: -0.03em;
-            font-family: 'Space Grotesk', sans-serif;
-            animation: slide-up 0.8s ease-out 0.1s both;
+            font-size: 2.5rem;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            font-family: 'Source Sans Pro', sans-serif;
+            line-height: 1.2;
         }
 
-        .hero-title-highlight {
-            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 50%, #a855f7 100%);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient-shift 4s ease infinite;
+        .hero-title span {
+            color: #2563eb;
         }
 
         .hero-subtitle {
-            font-size: 1.375rem;
-            color: #cbd5e1;
-            max-width: 48rem;
-            margin: 0 auto 2.5rem;
+            font-size: 1.125rem;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto 2rem;
             line-height: 1.6;
-            animation: slide-up 0.8s ease-out 0.2s both;
         }
 
         .hero-button {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 0.75rem;
-            padding: 1.125rem 2.5rem;
-            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 50%, #a855f7 100%);
-            background-size: 200% 200%;
-            color: #fff;
-            font-weight: 700;
+            background: #2563eb;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
             font-size: 1rem;
-            border-radius: 1.5rem;
             text-decoration: none;
-            box-shadow: 0 0 30px rgba(6, 182, 212, 0.4), 0 15px 40px rgba(37, 99, 235, 0.3);
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            animation: slide-up 0.8s ease-out 0.3s both;
-        }
-
-        .hero-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .hero-button:hover::before {
-            left: 100%;
+            transition: all 0.2s ease;
+            border: 1px solid #1d4ed8;
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
         }
 
         .hero-button:hover {
-            box-shadow: 0 0 50px rgba(6, 182, 212, 0.6), 0 20px 60px rgba(37, 99, 235, 0.4);
-            animation: hover-lift 0.3s ease forwards;
-            background-position: 100% 100%;
-            transform: translateY(-6px);
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
         }
 
         .hero-button svg {
-            width: 1.25rem;
-            height: 1.25rem;
-            transition: transform 0.3s ease;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-button:hover svg:last-child {
-            transform: translateX(4px);
+            width: 20px;
+            height: 20px;
         }
 
         /* Features Grid */
+        .features-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.75rem;
+            color: #1e293b;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
         .features-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 2rem;
-            margin-bottom: 5rem;
+            gap: 1.5rem;
         }
 
         @media (min-width: 768px) {
@@ -353,349 +201,470 @@
         }
 
         .feature-card {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(6, 182, 212, 0.2);
-            border-radius: 1.5rem;
+            background: white;
+            border-radius: 12px;
             padding: 2rem;
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-            position: relative;
-            overflow: hidden;
-            animation: slide-up 0.8s ease-out both;
-        }
-
-        .feature-card:nth-child(1) { animation-delay: 0.2s; }
-        .feature-card:nth-child(2) { animation-delay: 0.3s; }
-        .feature-card:nth-child(3) { animation-delay: 0.4s; }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.5), transparent);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            transition: all 0.2s ease;
         }
 
         .feature-card:hover {
-            background: rgba(30, 41, 59, 0.8);
-            border-color: rgba(6, 182, 212, 0.5);
-            box-shadow: 0 0 30px rgba(6, 182, 212, 0.2), 0 20px 40px rgba(0, 0, 0, 0.3);
             transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            border-color: #cbd5e1;
         }
 
         .feature-icon {
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 0.75rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1.5rem;
-            transition: transform 0.3s ease;
-            position: relative;
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+            margin: 0 auto 1.5rem;
         }
 
-        .feature-card:hover .feature-icon {
-            transform: scale(1.15) rotate(5deg);
+        .feature-icon.secure {
+            background: #d1fae5;
+            color: #059669;
         }
 
-        .feature-icon-green {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        .feature-icon.real-time {
+            background: #dbeafe;
+            color: #2563eb;
         }
 
-        .feature-icon-blue {
-            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
-        }
-
-        .feature-icon-purple {
-            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+        .feature-icon.access {
+            background: #f3e8ff;
+            color: #7c3aed;
         }
 
         .feature-icon svg {
-            width: 1.75rem;
-            height: 1.75rem;
-            color: #fff;
+            width: 28px;
+            height: 28px;
         }
 
         .feature-title {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #f1f5f9;
+            font-size: 1.125rem;
+            color: #1e293b;
             margin-bottom: 0.75rem;
-            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-family: 'Source Sans Pro', sans-serif;
         }
 
         .feature-description {
-            color: #cbd5e1;
+            color: #64748b;
             font-size: 0.95rem;
             line-height: 1.5;
         }
 
         /* Election Info Card */
-        .election-card {
-            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(37, 99, 235, 0.15) 50%, rgba(168, 85, 247, 0.15) 100%);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            border-radius: 2rem;
-            padding: 3rem 2rem;
-            color: #f1f5f9;
+        .election-info {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
             text-align: center;
-            box-shadow: 0 0 40px rgba(6, 182, 212, 0.2), 0 20px 50px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-            animation: slide-up 0.8s ease-out 0.5s both;
+            margin-bottom: 4rem;
         }
 
-        .election-card::before {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.8), transparent);
-        }
-
-        .election-title {
-            font-size: 2rem;
-            font-weight: 900;
+        .election-info-title {
+            font-size: 1.5rem;
+            color: #1e293b;
             margin-bottom: 1rem;
-            font-family: 'Space Grotesk', sans-serif;
-            background: linear-gradient(to right, #06b6d4, #2563eb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-weight: 700;
+            font-family: 'Source Sans Pro', sans-serif;
         }
 
-        .election-subtitle {
-            color: #cbd5e1;
-            font-size: 1.125rem;
-            margin-bottom: 1.5rem;
+        .election-info-subtitle {
+            color: #64748b;
+            font-size: 1rem;
+            margin-bottom: 2rem;
             line-height: 1.6;
         }
 
-        .election-info-grid {
-            display: flex;
-            flex-direction: column;
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 1.5rem;
-            justify-content: center;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
         @media (min-width: 640px) {
-            .election-info-grid {
-                flex-direction: row;
-                gap: 2rem;
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        .election-info-box {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(6, 182, 212, 0.2);
-            border-radius: 1rem;
+        .info-box {
+            background: #f8fafc;
+            border-radius: 10px;
             padding: 1.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-            flex: 1;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
         }
 
-        .election-info-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.5), transparent);
+        .info-box:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
         }
 
-        .election-info-box:hover {
-            background: rgba(30, 41, 59, 0.8);
-            border-color: rgba(6, 182, 212, 0.5);
-            transform: translateY(-4px);
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+        .info-date {
+            font-size: 1.5rem;
+            color: #2563eb;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: 'Source Sans Pro', sans-serif;
         }
 
-        .election-info-date {
-            font-size: 1.75rem;
-            font-weight: 900;
-            color: #06b6d4;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .election-info-label {
+        .info-label {
             font-size: 0.875rem;
-            color: #94a3b8;
-            margin-top: 0.5rem;
-            letter-spacing: 0.05em;
+            color: #64748b;
             font-weight: 600;
+        }
+
+        /* How to Vote Section */
+        .how-to-vote {
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 4rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .how-to-vote .section-title {
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .step-number {
+            background: #2563eb;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            font-size: 1rem;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .step-content p {
+            color: #64748b;
+            font-size: 0.9rem;
         }
 
         /* Footer */
         footer {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(6, 182, 212, 0.1);
-            box-shadow: 0 -10px 30px -10px rgba(0, 0, 0, 0.5);
+            background: #1e293b;
+            color: white;
+            padding: 3rem 0;
+            margin-top: 4rem;
         }
 
         .footer-container {
-            max-width: 80rem;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 0 1.5rem;
             text-align: center;
+        }
+
+        .footer-logo {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .footer-logo svg {
+            width: 24px;
+            height: 24px;
+            color: #1e293b;
+        }
+
+        .footer-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        .footer-subtitle {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
         }
 
         .footer-text {
             color: #cbd5e1;
+            font-size: 0.95rem;
             margin-bottom: 0.5rem;
-            font-weight: 500;
         }
 
-        .footer-subtext {
+        .footer-copyright {
             font-size: 0.875rem;
-            color: #64748b;
-            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-top: 1.5rem;
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
             .hero-title {
-                font-size: 2.5rem;
+                font-size: 2rem;
             }
 
-            .election-title {
-                font-size: 1.5rem;
+            .nav-status {
+                display: none;
             }
 
-            .bg-blob-1, .bg-blob-2 {
-                width: 12rem;
-                height: 12rem;
+            .election-info, .how-to-vote {
+                padding: 1.5rem;
+            }
+
+            .feature-card, .info-box, .step-item {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 1.75rem;
+            }
+
+            .hero-button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 0.75rem;
+                text-align: center;
+            }
+
+            .nav-title p {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
+    @php
+        // Load election status (id = 1)
+        $election = \App\Models\Election::find(1);
+        $electionStatus = $election ? $election->status : 'Pending';
+        $status = strtolower(trim($electionStatus));
+        $statusColor = $status === 'pending' ? '#f59e0b' : (($status === 'ongoing' || $status === 'active') ? '#10b981' : '#6b7280');
+    @endphp
     <!-- Navigation -->
-    <nav>
+    <header class="election-header">
         <div class="nav-container">
             <div class="nav-brand">
                 <div class="nav-logo">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                     </svg>
-                    <div class="nav-pulse"></div>
                 </div>
                 <div class="nav-title">
-                    <h1>Student Election System</h1>
-                    <p>Your Voice, Your Choice</p>
+                    <h1>Election System</h1>
+                    <p>Your Voice Matters</p>
                 </div>
             </div>
             <div class="nav-status">
-                <div class="nav-status-dot"></div>
-                <span>Election Status: Active</span>
+                <div class="status-dot" style="background: {{ $statusColor }};"></div>
+                <span>Election Status: {{ ucfirst($electionStatus) }}</span>
             </div>
         </div>
-    </nav>
+    </header>
 
     <!-- Main Content -->
     <main>
-        <!-- Background Elements -->
-        <div class="bg-pattern"></div>
-        <div class="bg-blob-1"></div>
-        <div class="bg-blob-2"></div>
-
-        <div class="main-wrapper">
-            <!-- Hero Section -->
-            <div class="hero-section">
-                <div class="hero-badge">
-                    <svg fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span>Secure • Transparent • Fair</span>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-badge">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span>Secure • Transparent • Fair</span>
+            </div>
+            
+            <h1 class="hero-title">
+                Shape <span>Your Future</span>
+            </h1>
+            
+            <p class="hero-subtitle">
+                Participate in the democratic process. Your vote is your voice in building a better student community
+            </p>
+            
+            @if($status === 'pending')
+                <div style="max-width:820px;margin:0.75rem auto 1rem;padding:0.75rem 1rem;border-radius:8px;background:#fffbeb;color:#92400e;border:1px solid #f59e0b;text-align:center;">
+                    <strong>Notice:</strong> The election has not started yet — voting is not available until the election is active.
                 </div>
+            @elseif($status === 'on hold')
+                <div style="max-width:820px;margin:0.75rem auto 1rem;padding:0.75rem 1rem;border-radius:8px;background:#fff7ed;color:#92400e;border:1px solid #f59e0b;text-align:center;">
+                    <strong>Notice:</strong> The election is currently on hold — voting is temporarily disabled until the election is resumed.
+                </div>
+            @elseif($status === 'ended')
+                <div style="max-width:820px;margin:0.75rem auto 1rem;padding:0.75rem 1rem;border-radius:8px;background:#fef2f2;color:#991b1b;border:1px solid #f87171;text-align:center;">
+                    <strong>Notice:</strong> The election has ended — voting is no longer available.
+                </div>
+            @endif
 
-                <h1 class="hero-title">
-                    Shape Your
-                    <span class="hero-title-highlight">Future</span>
-                </h1>
-
-                <p class="hero-subtitle">
-                    Participate in the democratic process. Your vote is your voice in building a better student community.
-                </p>
-
+            @if(in_array($status, ['ongoing', 'active']))
                 <a href="{{ route('voter.login') }}" class="hero-button">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
                     </svg>
                     Cast Your Vote
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                    </svg>
                 </a>
-            </div>
+            @endif
+        </section>
 
-            <!-- Features Grid -->
+        <!-- Features Section -->
+        <section class="features-section">
+            <h2 class="section-title">Why Vote With Us</h2>
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon feature-icon-green">
+                    <div class="feature-icon secure">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
                     <h3 class="feature-title">Secure Voting</h3>
-                    <p class="feature-description">State-of-the-art encryption ensures your vote remains private and tamper-proof.</p>
+                    <p class="feature-description">
+                        Your vote is confidential and secure. We use encrypted systems to protect your privacy.
+                    </p>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon feature-icon-blue">
+                    <div class="feature-icon real-time">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                         </svg>
                     </div>
-                    <h3 class="feature-title">Real-time Results</h3>
-                    <p class="feature-description">Watch election results unfold in real-time with transparent vote counting.</p>
+                    <h3 class="feature-title">Transparent Process</h3>
+                    <p class="feature-description">
+                        Clear procedures and verifiable results ensure a fair election process for everyone.
+                    </p>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon feature-icon-purple">
+                    <div class="feature-icon access">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                     </div>
                     <h3 class="feature-title">Easy Access</h3>
-                    <p class="feature-description">Vote from anywhere, anytime with our user-friendly platform.</p>
+                    <p class="feature-description">
+                        Accessible platform that works on any device. Vote anytime during election hours.
+                    </p>
                 </div>
             </div>
+        </section>
 
-            <!-- Election Info Card -->
-            <div class="election-card">
-                <h2 class="election-title">Ready to Vote?</h2>
-                <p class="election-subtitle">Login with your credentials to access the voting platform and make your voice heard.</p>
-                <div class="election-info-grid">
-                    <div class="election-info-box">
-                        <div class="election-info-date">{{ now()->format('M j, Y') }}</div>
-                        <div class="election-info-label">Election Date</div>
+        <!-- Election Info -->
+        <section class="election-info">
+            <h2 class="election-info-title">Election Details</h2>
+            <p class="election-info-subtitle">
+                Make sure you're ready to participate. Check the dates and times for this year's student council election.
+            </p>
+            <div class="info-grid">
+                <div class="info-box">
+                    <div class="info-date">{{ now()->format('F j, Y') }}</div>
+                    <div class="info-label">Election Day</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-date">8:00 AM - 5:00 PM</div>
+                    <div class="info-label">Voting Hours</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How to Vote -->
+        <section class="how-to-vote">
+            <h2 class="section-title">How to Vote</h2>
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Login to Your Account</h4>
+                        <p>Use your student credentials to access the voting platform.</p>
                     </div>
-                    <div class="election-info-box">
-                        <div class="election-info-date">8:00 AM - 5:00 PM</div>
-                        <div class="election-info-label">Voting Hours</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Review the Candidates</h4>
+                        <p>Learn about each candidate's platform and qualifications.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Cast Your Vote</h4>
+                        <p>Select your preferred candidate for each position.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Submit & Confirm</h4>
+                        <p>Review your selections and submit your vote. Remember, you cannot change your vote after submission.</p>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     </main>
 
     <!-- Footer -->
     <footer>
         <div class="footer-container">
-            <p class="footer-text">© {{ date('Y') }} Student Election System. All rights reserved.</p>
-            <p class="footer-subtext">Empowering student voices through democratic participation.</p>
+            <div class="footer-logo">
+                <svg fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+            </div>
+            <h3 class="footer-title">Student Council Election</h3>
+            <p class="footer-subtitle">Your Voice, Your Choice</p>
+            <p class="footer-text">
+                Empowering students through democratic participation in campus governance.
+            </p>
+            <p class="footer-copyright">
+                © {{ date('Y') }} Student Council Election System. All rights reserved.
+            </p>
         </div>
     </footer>
 </body>

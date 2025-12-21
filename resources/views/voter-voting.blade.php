@@ -3,31 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cast Your Vote - Premium Election System</title>
+    <title>Cast Your Vote - Student Election</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.5); }
-            50% { box-shadow: 0 0 40px rgba(34, 211, 238, 0.8); }
-        }
-
-        @keyframes checkmark {
-            0% { transform: scale(0) rotate(-45deg); opacity: 0; }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1) rotate(0); opacity: 1; }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@400;600;700&display=swap');
 
         * {
             margin: 0;
@@ -36,408 +15,280 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(-45deg, #0f172a 0%, #1a0f2e 25%, #0d1f3c 50%, #1e1b4b 75%, #0f172a 100%);
-            background-size: 400% 400%;
-            animation: bgGradient 15s ease infinite;
-            min-height: 100vh;
-            color: #fff;
-            position: relative;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
         }
 
-        @keyframes bgGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
-        nav {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 58, 138, 0.95) 100%);
-            backdrop-filter: blur(40px);
+        /* Header */
+        .election-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
-            z-index: 50;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3),
-                        0 0 50px rgba(34, 211, 238, 0.1);
-            border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+            z-index: 100;
         }
 
-        .nav-container {
-            max-width: 56rem;
+        .header-container {
+            max-width: 900px;
             margin: 0 auto;
-            padding: 0 2rem;
+            padding: 0 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 5rem;
         }
 
-        .nav-brand {
+        .header-brand {
             display: flex;
             align-items: center;
-            gap: 1rem;
-        }
-
-        .nav-logo {
-            width: 3.25rem;
-            height: 3.25rem;
-            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 50%, #7c3aed 100%);
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 20px 40px rgba(6, 182, 212, 0.4),
-                        inset 0 0 20px rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-logo:hover {
-            transform: scale(1.1);
-            box-shadow: 0 30px 60px rgba(6, 182, 212, 0.5);
-        }
-
-        .nav-logo svg {
-            width: 1.75rem;
-            height: 1.75rem;
-            color: #fff;
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
-        }
-
-        .nav-title h1 {
-            font-size: 1.25rem;
-            font-weight: 900;
-            background: linear-gradient(to right, #a5f3fc, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.5px;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .nav-title p {
-            font-size: 0.75rem;
-            color: rgba(165, 243, 252, 0.6);
-            letter-spacing: 0.5px;
-        }
-
-        .nav-user {
-            display: none;
-        }
-
-        @media (min-width: 640px) {
-            .nav-user {
-                display: block;
-                text-align: right;
-            }
-
-            .nav-user p:first-child {
-                font-size: 0.95rem;
-                font-weight: 700;
-                color: #e0f2fe;
-            }
-
-            .nav-user p:last-child {
-                font-size: 0.8rem;
-                color: rgba(165, 243, 252, 0.6);
-            }
-        }
-
-        .main-container {
-            max-width: 56rem;
-            margin: 0 auto;
-            padding: 2rem;
-            padding-top: 5rem;
-            padding-bottom: 6rem;
-            position: relative;
-            z-index: 10;
-        }
-
-        .page-header {
-            text-align: center;
-            margin-bottom: 4rem;
-            animation: slideUp 0.8s ease-out;
+            gap: 0.75rem;
         }
 
         .header-icon {
-            display: inline-flex;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 5.5rem;
-            height: 5.5rem;
-            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 50%, #7c3aed 100%);
-            border-radius: 1.5rem;
-            box-shadow: 0 30px 60px rgba(6, 182, 212, 0.4),
-                        inset 0 0 30px rgba(255, 255, 255, 0.15);
-            margin-bottom: 2rem;
-            transition: all 0.4s ease;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            animation: float 4s ease-in-out infinite;
-        }
-
-        .header-icon:hover {
-            transform: scale(1.15);
-            box-shadow: 0 40px 80px rgba(6, 182, 212, 0.5);
         }
 
         .header-icon svg {
-            width: 2.75rem;
-            height: 2.75rem;
-            color: #fff;
-            filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+            width: 20px;
+            height: 20px;
+            color: #1e3a8a;
         }
 
-        .page-title {
-            font-size: 3.5rem;
-            font-weight: 900;
-            background: linear-gradient(to right, #cffafe, #a5f3fc, #93c5fd);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 1rem;
-            letter-spacing: -1px;
-            font-family: 'Space Grotesk', sans-serif;
+        .header-title h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Source Sans Pro', sans-serif;
         }
 
-        .page-subtitle {
-            font-size: 1.2rem;
-            color: rgba(165, 243, 252, 0.85);
-            font-weight: 500;
+        .header-title p {
+            font-size: 0.75rem;
+            opacity: 0.9;
         }
 
+        .voter-info {
+            text-align: right;
+        }
+
+        .voter-info p:first-child {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .voter-info p:last-child {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        .page-header p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        /* Instructions */
         .instructions-card {
-            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(37, 99, 235, 0.1));
-            border: 2px solid rgba(34, 211, 238, 0.5);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-bottom: 3rem;
-            backdrop-filter: blur(20px);
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
             display: flex;
-            gap: 1.5rem;
-            animation: slideUp 0.8s ease-out 0.1s both;
+            gap: 1rem;
         }
 
         .instructions-icon {
             flex-shrink: 0;
-            width: 2rem;
-            height: 2rem;
-            color: rgba(34, 211, 238, 0.8);
+            width: 24px;
+            height: 24px;
+            color: #2563eb;
         }
 
         .instructions-content h3 {
-            font-weight: 800;
-            color: rgba(165, 243, 252, 0.95);
-            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 1rem;
             margin-bottom: 0.5rem;
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: 'Source Sans Pro', sans-serif;
         }
 
         .instructions-content p {
-            color: #e0f2fe;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            color: #475569;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
+        /* Error Messages */
+        .error-messages {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .error-messages h3 {
+            color: #dc2626;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        .error-messages ul {
+            list-style: none;
+        }
+
+        .error-messages li {
+            color: #dc2626;
+            margin-bottom: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Voting Form */
         .voting-form {
             display: flex;
             flex-direction: column;
-            gap: 3rem;
+            gap: 2rem;
         }
 
+        /* Position Card */
         .position-card {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-            border-radius: 2rem;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3),
-                        0 0 20px rgba(34, 211, 238, 0.1);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             overflow: hidden;
-            border: 2px solid rgba(34, 211, 238, 0.3);
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
-            animation: slideUp 0.8s ease-out both;
-        }
-
-        .position-card:hover {
-            border-color: rgba(34, 211, 238, 0.7);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4),
-                        0 0 40px rgba(34, 211, 238, 0.2);
-            transform: translateY(-8px);
+            border: 1px solid #e2e8f0;
         }
 
         .position-header {
-            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 40%, #4f46e5 100%);
-            padding: 2.5rem;
-            position: relative;
-            overflow: hidden;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .position-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
+            background: #f1f5f9;
+            padding: 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .position-header-content {
-            position: relative;
-            z-index: 10;
-        }
-
-        .position-badges {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 1rem;
-            margin-bottom: 1rem;
         }
 
         .position-number {
-            display: inline-flex;
+            background: #2563eb;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 3rem;
-            height: 3rem;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 0.75rem;
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            font-weight: 800;
-            color: rgba(255, 255, 255, 0.95);
-            font-size: 1.35rem;
-            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
         }
 
-        .position-label {
-            display: inline-block;
-            padding: 0.4rem 1rem;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 9999px;
-            color: rgba(255, 255, 255, 0.95);
-            font-size: 0.85rem;
-            font-weight: 700;
-            backdrop-filter: blur(20px);
-            border: 1.5px solid rgba(255, 255, 255, 0.3);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+        .position-title-section {
+            flex: 1;
         }
 
         .position-title {
-            font-size: 2rem;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.95);
-            margin-bottom: 0.5rem;
-            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            letter-spacing: -0.5px;
-            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.15rem;
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-family: 'Source Sans Pro', sans-serif;
         }
 
         .position-description {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            color: #64748b;
+            font-size: 0.9rem;
         }
 
+        /* Candidates List */
         .candidates-list {
-            padding: 2.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+            padding: 1.5rem;
         }
 
         .candidate-option {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
-            padding: 1.5rem;
-            border: 2px solid rgba(34, 211, 238, 0.3);
-            border-radius: 1.25rem;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-            background: rgba(0, 0, 0, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .candidate-option::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.1), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.6s ease;
-        }
-
-        .candidate-option:hover::before {
-            transform: translateX(100%);
+            transition: all 0.2s ease;
+            margin-bottom: 0.75rem;
+            background: white;
         }
 
         .candidate-option:hover {
-            border-color: rgba(34, 211, 238, 0.7);
-            background: rgba(34, 211, 238, 0.15);
-            box-shadow: 0 15px 35px rgba(6, 182, 212, 0.2);
-            transform: translateX(8px);
+            border-color: #cbd5e1;
+            background: #f8fafc;
         }
 
-        .candidate-option input[type="radio"]:checked + .candidate-content {
-            color: #e0f2fe;
+        .candidate-option.selected {
+            border-color: #2563eb;
+            background: rgba(37, 99, 235, 0.05);
         }
 
         .candidate-radio {
-            width: 1.75rem;
-            height: 1.75rem;
+            width: 20px;
+            height: 20px;
             flex-shrink: 0;
             cursor: pointer;
-            accent-color: rgba(6, 182, 212, 0.9);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .candidate-option:hover .candidate-radio {
-            transform: scale(1.15);
+            accent-color: #2563eb;
         }
 
         .candidate-content {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 1rem;
             flex: 1;
-            position: relative;
-            z-index: 10;
         }
 
         .candidate-photo {
-            width: 4.5rem;
-            height: 4.5rem;
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-            border-radius: 1rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.2);
             flex-shrink: 0;
+            background: #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid rgba(34, 211, 238, 0.4);
-            transition: all 0.3s ease;
-        }
-
-        .candidate-option:hover .candidate-photo {
-            box-shadow: 0 12px 30px rgba(6, 182, 212, 0.35);
-            border-color: rgba(34, 211, 238, 0.7);
-            transform: scale(1.08);
+            border: 1px solid #e2e8f0;
         }
 
         .candidate-photo img {
@@ -447,62 +298,68 @@
         }
 
         .candidate-photo svg {
-            width: 2rem;
-            height: 2rem;
-            color: rgba(34, 211, 238, 0.6);
+            width: 28px;
+            height: 28px;
+            color: #94a3b8;
         }
 
         .candidate-info h4 {
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: rgba(165, 243, 252, 0.95);
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
             margin-bottom: 0.25rem;
-            letter-spacing: -0.3px;
-            font-family: 'Space Grotesk', sans-serif;
         }
 
         .candidate-info p {
-            color: rgba(148, 163, 184, 0.8);
-            font-size: 0.9rem;
+            color: #64748b;
+            font-size: 0.85rem;
             margin-bottom: 0.25rem;
         }
 
+        /* Abstain Option */
         .abstain-option {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
-            padding: 1.75rem;
-            border: 2.5px dashed rgba(168, 85, 247, 0.4);
-            border-radius: 1.25rem;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px dashed #94a3b8;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(139, 92, 246, 0.05);
-            position: relative;
+            transition: all 0.2s ease;
+            background: #f8fafc;
         }
 
         .abstain-option:hover {
-            border-color: rgba(168, 85, 247, 0.7);
-            background: rgba(139, 92, 246, 0.15);
-            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.2);
-            transform: translateX(8px);
+            border-color: #64748b;
+            background: #f1f5f9;
+        }
+
+        .abstain-option.selected {
+            border-color: #7c3aed;
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .abstain-option svg {
+            width: 20px;
+            height: 20px;
+            color: #7c3aed;
+            flex-shrink: 0;
         }
 
         .abstain-text {
-            font-size: 1rem;
-            font-weight: 700;
-            color: rgba(168, 85, 247, 0.9);
+            font-size: 0.95rem;
+            color: #475569;
             flex: 1;
-            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 500;
         }
 
+        /* Confirmation Section */
         .confirmation-section {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08));
-            border: 2px solid rgba(16, 185, 129, 0.3);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-top: 2rem;
-            backdrop-filter: blur(20px);
-            animation: slideUp 0.8s ease-out 0.3s both;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1rem;
         }
 
         .confirmation-checkbox-label {
@@ -513,126 +370,166 @@
         }
 
         .confirmation-checkbox {
-            width: 1.5rem;
-            height: 1.5rem;
-            min-width: 1.5rem;
-            margin-top: 0.25rem;
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            margin-top: 0.15rem;
             cursor: pointer;
-            accent-color: rgba(16, 185, 129, 0.8);
+            accent-color: #16a34a;
         }
 
         .confirmation-content h3 {
-            font-weight: 800;
-            color: rgba(16, 185, 129, 0.95);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            color: #15803d;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            font-family: 'Source Sans Pro', sans-serif;
         }
 
         .confirmation-items {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
 
         .confirmation-item {
             display: flex;
             align-items: flex-start;
-            gap: 0.75rem;
-            color: rgba(16, 185, 129, 0.8);
-            font-size: 0.95rem;
+            gap: 0.5rem;
+            color: #166534;
+            font-size: 0.9rem;
             font-weight: 500;
         }
 
         .confirmation-item svg {
-            width: 1.25rem;
-            height: 1.25rem;
-            color: rgba(16, 185, 129, 0.8);
+            width: 16px;
+            height: 16px;
+            color: #16a34a;
             flex-shrink: 0;
             margin-top: 0.15rem;
         }
 
+        /* Action Buttons */
         .action-buttons {
             display: flex;
             gap: 1rem;
-            margin-top: 3rem;
-        }
-
-        @media (min-width: 640px) {
-            .action-buttons {
-                gap: 1.5rem;
-            }
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.75rem;
-            padding: 1.15rem 2rem;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
             border: none;
-            border-radius: 1rem;
-            font-weight: 800;
-            font-size: 1.05rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
-            position: relative;
-            overflow: hidden;
-            font-family: 'Space Grotesk', sans-serif;
-            letter-spacing: 0.3px;
+            transition: all 0.2s ease;
+            text-decoration: none;
             flex: 1;
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(34, 211, 238, 0.1));
-            color: rgba(165, 243, 252, 0.95);
-            border: 2px solid rgba(34, 211, 238, 0.4);
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
         }
 
         .btn-secondary:hover {
-            background: linear-gradient(135deg, rgba(34, 211, 238, 0.3), rgba(34, 211, 238, 0.2));
-            border-color: rgba(34, 211, 238, 0.7);
-            box-shadow: 0 15px 35px rgba(34, 211, 238, 0.2);
-            transform: translateY(-3px);
+            background: #e2e8f0;
+            border-color: #94a3b8;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #06b6d4 0%, #2563eb 50%, #7c3aed 100%);
-            color: #fff;
-            border: none;
-            box-shadow: 0 15px 35px rgba(6, 182, 212, 0.35),
-                        0 0 0 1.5px rgba(34, 211, 238, 0.2) inset;
+            background: #2563eb;
+            color: white;
+            border: 1px solid #1d4ed8;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #06a6d4 0%, #1d4ed8 50%, #6d28d9 100%);
-            box-shadow: 0 25px 50px rgba(6, 182, 212, 0.4),
-                        0 0 0 2px rgba(34, 211, 238, 0.3) inset;
-            transform: translateY(-4px);
+            background: #1d4ed8;
+            border-color: #1e40af;
         }
 
-        .btn-primary:active {
-            transform: translateY(-2px);
+        .btn-primary:disabled {
+            background: #94a3b8;
+            border-color: #64748b;
+            cursor: not-allowed;
         }
 
         .btn svg {
-            width: 1.35rem;
-            height: 1.35rem;
-            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
+            width: 18px;
+            height: 18px;
         }
 
+        /* No Positions */
+        .no-positions {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .no-positions p {
+            font-size: 1rem;
+            color: #475569;
+            font-weight: 600;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        /* Progress Indicator */
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .progress-number {
+            background: #2563eb;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .nav-container {
-                padding: 0 1.5rem;
+            .header-container {
+                flex-direction: column;
+                gap: 0.75rem;
+                text-align: center;
+            }
+
+            .voter-info {
+                text-align: center;
             }
 
             .main-container {
-                padding: 1.5rem;
-                padding-top: 4rem;
-            }
-
-            .page-title {
-                font-size: 2.5rem;
+                padding: 0 1rem;
             }
 
             .action-buttons {
@@ -643,95 +540,116 @@
                 width: 100%;
             }
 
-            .position-card {
-                margin-bottom: 1.5rem;
+            .candidate-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .candidate-photo {
+                width: 48px;
+                height: 48px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .position-header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .candidates-list {
+                padding: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav>
-        <div class="nav-container">
-            <div class="nav-brand">
-                <div class="nav-logo">
+    <!-- Header -->
+    <header class="election-header">
+        <div class="header-container">
+            <div class="header-brand">
+                <div class="header-icon">
                     <svg fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                     </svg>
                 </div>
-                <div class="nav-title">
-                    <h1>Cast Your Vote</h1>
-                    <p>Secure & Transparent</p>
+                <div class="header-title">
+                    <h1>Election System</h1>
+                    <p>Cast your vote</p>
                 </div>
             </div>
-            <div class="nav-user">
+            <div class="voter-info">
                 <p>{{ session('voter_firstname') }} {{ session('voter_lastname') }}</p>
-                <p>Authenticated Voter</p>
+                <p>Registered Voter</p>
             </div>
         </div>
-    </nav>
+    </header>
 
     <!-- Main Content -->
     <div class="main-container">
         <!-- Page Header -->
         <div class="page-header">
-            <div class="header-icon">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                </svg>
-            </div>
-            <h1 class="page-title">Cast Your Vote</h1>
-            <p class="page-subtitle">Select your candidates for each position</p>
+            <h1>Cast Your Vote</h1>
+            <p>Select your preferred candidate for each position</p>
         </div>
 
-        <!-- Instructions Card -->
+        <!-- Progress Indicator -->
+        <div class="progress-indicator">
+            <div class="progress-number">{{ $positions->count() > 0 ? 1 : 0 }}</div>
+            <div class="progress-text">Reviewing {{ $positions->count() }} position(s)</div>
+        </div>
+
+        <!-- Instructions -->
         <div class="instructions-card">
             <svg class="instructions-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <div class="instructions-content">
-                <h3>How to Vote</h3>
-                <p>For each position, select one candidate or choose to abstain. Review all your selections carefully before submitting. Once submitted, your vote cannot be changed.</p>
+                <h3>Voting Instructions</h3>
+                <p>Select one candidate per position, or choose to abstain. You may review your selections before submitting. Once submitted, your vote is final and cannot be changed.</p>
             </div>
         </div>
 
         <!-- Error Messages -->
         @if ($errors->any())
-            <div style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(239, 68, 68, 0.1)); border: 2px solid rgba(239, 68, 68, 0.5); border-radius: 1.5rem; padding: 2rem; margin-bottom: 3rem; backdrop-filter: blur(20px);">
-                <h3 style="color: #fca5a5; font-weight: 800; margin-bottom: 1rem; font-family: 'Space Grotesk', sans-serif;">Please correct the following errors:</h3>
-                <ul style="list-style: none;">
+            <div class="error-messages">
+                <h3>Please correct the following errors:</h3>
+                <ul>
                     @foreach ($errors->all() as $error)
-                        <li style="color: #fca5a5; margin-bottom: 0.5rem; display: flex; gap: 0.5rem;">
-                            <span>•</span> {{ $error }}
-                        </li>
+                        <li>• {{ $error }}</li>
                     @endforeach
                 </ul>
             </div>
         @endif
 
         <!-- Voting Form -->
-        <form method="POST" action="{{ route('voter.submit-vote') }}" class="voting-form">
+        <form method="POST" action="{{ route('voter.submit-vote') }}" class="voting-form" id="votingForm">
             @csrf
 
             @forelse($positions as $index => $position)
-                <div class="position-card" style="animation-delay: {{ $index * 0.1 }}s;">
+                <div class="position-card">
                     <div class="position-header">
                         <div class="position-header-content">
-                            <div class="position-badges">
-                                <div class="position-number">{{ $index + 1 }}</div>
-                                <span class="position-label">Position</span>
+                            <div class="position-number">{{ $index + 1 }}</div>
+                            <div class="position-title-section">
+                                <h2 class="position-title">{{ $position->position_name }}</h2>
+                                @if($position->description)
+                                    <p class="position-description">{{ $position->description }}</p>
+                                @endif
                             </div>
-                            <h2 class="position-title">{{ $position->position_name }}</h2>
-                            @if($position->description)
-                                <p class="position-description">{{ $position->description }}</p>
-                            @endif
                         </div>
                     </div>
 
                     <div class="candidates-list">
                         @if($position->candidates->count() > 0)
                             @foreach($position->candidates as $candidate)
-                                <label class="candidate-option">
+                                <label class="candidate-option" data-position="{{ $position->position_id }}">
                                     <input 
                                         type="radio" 
                                         name="votes[{{ $position->position_id }}]" 
@@ -764,7 +682,7 @@
                         @endif
 
                         <!-- Abstain Option -->
-                        <label class="abstain-option">
+                        <label class="abstain-option" data-position="{{ $position->position_id }}">
                             <input 
                                 type="radio" 
                                 name="votes[{{ $position->position_id }}]" 
@@ -774,7 +692,7 @@
                                 data-position-id="{{ $position->position_id }}"
                                 data-candidate-id="abstain"
                             />
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 1.75rem; height: 1.75rem; color: rgba(168, 85, 247, 0.6);">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                             <span class="abstain-text">Abstain from this position</span>
@@ -782,114 +700,176 @@
                     </div>
                 </div>
             @empty
-                <div style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(139, 92, 246, 0.1)); border: 2px solid rgba(99, 102, 241, 0.3); border-radius: 2rem; padding: 3rem; text-align: center; backdrop-filter: blur(20px);">
-                    <p style="font-size: 1.15rem; color: rgba(165, 243, 252, 0.8); font-weight: 600; font-family: 'Space Grotesk', sans-serif;">No positions available</p>
+                <div class="no-positions">
+                    <p>No positions available for voting at this time.</p>
                 </div>
             @endforelse
 
             <!-- Confirmation Section -->
-            <div class="confirmation-section">
-                <label class="confirmation-checkbox-label">
-                    <input type="checkbox" name="confirmation" id="confirmation" class="confirmation-checkbox" required />
-                    <div class="confirmation-content">
-                        <h3>Confirm Your Vote</h3>
-                        <div class="confirmation-items">
-                            <div class="confirmation-item">
-                                <svg fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                                </svg>
-                                <span>I have reviewed all my selections</span>
-                            </div>
-                            <div class="confirmation-item">
-                                <svg fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                                </svg>
-                                <span>I understand my vote cannot be changed</span>
-                            </div>
-                            <div class="confirmation-item">
-                                <svg fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                                </svg>
-                                <span>I am voting of my own free will</span>
+            @if($positions->count() > 0)
+                <div class="confirmation-section">
+                    <label class="confirmation-checkbox-label">
+                        <input type="checkbox" name="confirmation" id="confirmation" class="confirmation-checkbox" required />
+                        <div class="confirmation-content">
+                            <h3>Confirm Your Vote</h3>
+                            <div class="confirmation-items">
+                                <div class="confirmation-item">
+                                    <svg fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                    <span>I have reviewed all my selections</span>
+                                </div>
+                                <div class="confirmation-item">
+                                    <svg fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                    <span>I understand my vote is final</span>
+                                </div>
+                                <div class="confirmation-item">
+                                    <svg fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                    <span>I am voting voluntarily</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
-            </div>
+                    </label>
+                </div>
 
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <a href="{{ route('voter.candidates') }}" class="btn btn-secondary">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                    Review Candidates
-                </a>
-                <button 
-                    type="submit"
-                    onclick="return confirm('Are you sure? This action CANNOT be undone.');"
-                    class="btn btn-primary"
-                >
-                    <svg fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                    </svg>
-                    Submit My Vote
-                </button>
-            </div>
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="{{ route('voter.candidates') }}" class="btn btn-secondary">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        Review Candidates
+                    </a>
+                    <button 
+                        type="submit"
+                        onclick="return confirmSubmission();"
+                        class="btn btn-primary"
+                        id="submitBtn"
+                    >
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                        Submit Vote
+                    </button>
+                </div>
+            @endif
         </form>
     </div>
 
     <script>
-        // Simple toggle behavior - click again to unselect
+        // Highlight selected options
         document.addEventListener('DOMContentLoaded', function() {
-            const votes = {};
-            const lastSelected = {};
+            // Update visual state when radio buttons change
+            document.querySelectorAll('input[type="radio"][name^="votes"]').forEach(radio => {
+                // Set initial state
+                updateOptionState(radio);
+                
+                // Update on change
+                radio.addEventListener('change', function() {
+                    updateOptionState(this);
+                });
+            });
             
-            // Restore from localStorage first
+            function updateOptionState(radio) {
+                const label = radio.closest('label');
+                const positionId = radio.getAttribute('data-position-id');
+                
+                // Remove selected class from all options in this position
+                document.querySelectorAll(`label[data-position="${positionId}"]`).forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to this option if checked
+                if (radio.checked) {
+                    label.classList.add('selected');
+                }
+            }
+            
+            // Enable/disable submit button based on confirmation checkbox
+            const confirmationCheckbox = document.getElementById('confirmation');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (confirmationCheckbox && submitBtn) {
+                confirmationCheckbox.addEventListener('change', function() {
+                    // In a real implementation, you might want to check if all positions have votes
+                    // For now, just enable/disable based on confirmation
+                    submitBtn.disabled = !this.checked;
+                });
+                
+                // Initial state
+                submitBtn.disabled = !confirmationCheckbox.checked;
+            }
+        });
+        
+        function confirmSubmission() {
+            // Check if confirmation is checked
+            const confirmationCheckbox = document.getElementById('confirmation');
+            if (!confirmationCheckbox || !confirmationCheckbox.checked) {
+                alert('Please confirm your vote by checking the confirmation box.');
+                return false;
+            }
+            
+            // Count selected votes
+            const selectedVotes = document.querySelectorAll('input[type="radio"][name^="votes"]:checked').length;
+            const totalPositions = {{ $positions->count() }};
+            
+            if (selectedVotes !== totalPositions) {
+                return confirm('You have not voted for all positions. Are you sure you want to submit? You can choose to abstain for specific positions.');
+            }
+            
+            return confirm('Are you sure you want to submit your vote? This action cannot be undone.');
+        }
+        
+        // Save progress in localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            // Restore saved selections
             document.querySelectorAll('input[type="radio"][name^="votes"]').forEach(radio => {
                 const positionId = radio.getAttribute('data-position-id');
-                const saved = localStorage.getItem('votes_backup_' + positionId);
+                const saved = localStorage.getItem(`vote_${positionId}`);
                 
                 if (saved && radio.value === saved) {
                     radio.checked = true;
-                    votes[positionId] = saved;
-                    lastSelected[positionId] = radio;
-                } else if (radio.checked) {
-                    votes[positionId] = radio.value;
-                    lastSelected[positionId] = radio;
+                    updateOptionState(radio);
                 }
             });
             
-            // Add click listener for toggle behavior
+            // Save on change
             document.querySelectorAll('input[type="radio"][name^="votes"]').forEach(radio => {
-                radio.addEventListener('click', function() {
+                radio.addEventListener('change', function() {
                     const positionId = this.getAttribute('data-position-id');
-                    
-                    // If clicking the already-selected radio, uncheck it
-                    if (lastSelected[positionId] === this && this.checked) {
-                        this.checked = false;
-                        delete votes[positionId];
-                        delete lastSelected[positionId];
-                        localStorage.removeItem('votes_backup_' + positionId);
-                        console.log('Unselected position', positionId);
-                    } else {
-                        // New selection
-                        votes[positionId] = this.value;
-                        lastSelected[positionId] = this;
-                        localStorage.setItem('votes_backup_' + positionId, this.value);
-                        console.log('Selected position', positionId, '=', this.value);
+                    if (this.checked) {
+                        localStorage.setItem(`vote_${positionId}`, this.value);
                     }
                 });
             });
             
-            // Clear localStorage on form submit
-            document.querySelector('.voting-form').addEventListener('submit', function() {
-                Object.keys(votes).forEach(positionId => {
-                    localStorage.removeItem('votes_backup_' + positionId);
+            // Clear on form submit
+            document.getElementById('votingForm').addEventListener('submit', function() {
+                document.querySelectorAll('input[type="radio"][name^="votes"]').forEach(radio => {
+                    const positionId = radio.getAttribute('data-position-id');
+                    localStorage.removeItem(`vote_${positionId}`);
                 });
             });
         });
+        
+        function updateOptionState(radio) {
+            const label = radio.closest('label');
+            const positionId = radio.getAttribute('data-position-id');
+            
+            // Remove selected class from all options in this position
+            document.querySelectorAll(`label[data-position="${positionId}"]`).forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to this option if checked
+            if (radio.checked) {
+                label.classList.add('selected');
+            }
+        }
     </script>
 </body>
 </html>
-

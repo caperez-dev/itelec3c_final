@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Candidate;
 use App\Models\Position;
 use App\Models\VoteCount;
+use App\Models\Election;
 use Illuminate\Http\Request;
 
 class CandidateController extends Controller
@@ -13,6 +15,10 @@ class CandidateController extends Controller
      */
     public function index(Request $request)
     {
+        // Get current election status
+        $election = Election::find(1);
+        $electionStatus = $election ? $election->status : 'pending';
+        
         $search = $request->input('search');
         
         if ($search) {
@@ -32,7 +38,7 @@ class CandidateController extends Controller
                 ->paginate(10);
         }
         
-        return view('CandidatesDisplay', compact('candidates'));
+        return view('CandidatesDisplay', compact('candidates', 'electionStatus'));
     }
 
     /**
@@ -40,6 +46,13 @@ class CandidateController extends Controller
      */
     public function create()
     {
+        // Check election status before allowing create
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.candidates')
+                ->with('error', 'Cannot add candidates. Election is not in Pending status.');
+        }
+        
         $positions = Position::whereNull('deleted_at')
             ->orderBy('position_name')
             ->get();
@@ -52,6 +65,13 @@ class CandidateController extends Controller
      */
     public function store(Request $request)
     {
+        // Check election status before allowing store
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.candidates')
+                ->with('error', 'Cannot add candidates. Election is not in Pending status.');
+        }
+        
         $validated = $request->validate([
             'candidate_name' => 'required|string|max:255',
             'party_affiliation' => 'required|string|max:255',
@@ -89,6 +109,13 @@ class CandidateController extends Controller
      */
     public function edit($id)
     {
+        // Check election status before allowing edit
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.candidates')
+                ->with('error', 'Cannot edit candidates. Election is not in Pending status.');
+        }
+        
         $candidate = Candidate::findOrFail($id);
         $positions = Position::whereNull('deleted_at')
             ->orderBy('position_name')
@@ -102,6 +129,13 @@ class CandidateController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Check election status before allowing update
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.candidates')
+                ->with('error', 'Cannot update candidates. Election is not in Pending status.');
+        }
+        
         $candidate = Candidate::findOrFail($id);
         
         $validated = $request->validate([
@@ -125,6 +159,13 @@ class CandidateController extends Controller
      */
     public function destroy($id)
     {
+        // Check election status before allowing delete
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.candidates')
+                ->with('error', 'Cannot delete candidates. Election is not in Pending status.');
+        }
+        
         $candidate = Candidate::findOrFail($id);
         $candidate->delete(); // Soft delete
         
@@ -137,6 +178,10 @@ class CandidateController extends Controller
      */
     public function ArchivedCandidatesDisplay(Request $request)
     {
+        // Get current election status
+        $election = Election::find(1);
+        $electionStatus = $election ? $election->status : 'pending';
+        
         $search = $request->input('search');
         
         if ($search) {
@@ -155,7 +200,7 @@ class CandidateController extends Controller
                 ->get();
         }
         
-        return view('ArchivedCandidatesDisplay', compact('candidates'));
+        return view('ArchivedCandidatesDisplay', compact('candidates', 'electionStatus'));
     }
 
     /**
@@ -163,6 +208,13 @@ class CandidateController extends Controller
      */
     public function restore($id)
     {
+        // Check election status before allowing restore
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.archived.candidates')
+                ->with('error', 'Cannot restore candidates. Election is not in Pending status.');
+        }
+        
         $candidate = Candidate::onlyTrashed()->findOrFail($id);
         $candidate->restore();
         
@@ -175,6 +227,13 @@ class CandidateController extends Controller
      */
     public function forceDelete($id)
     {
+        // Check election status before allowing force delete
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.archived.candidates')
+                ->with('error', 'Cannot permanently delete candidates. Election is not in Pending status.');
+        }
+        
         $candidate = Candidate::onlyTrashed()->findOrFail($id);
         $candidate->forceDelete(); // Permanent delete
         
@@ -187,6 +246,13 @@ class CandidateController extends Controller
      */
     public function disable($id)
     {
+        // Check election status before allowing disable
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.candidates')
+                ->with('error', 'Cannot disable candidates. Election is not in Pending status.');
+        }
+        
         $candidate = Candidate::findOrFail($id);
         $candidate->update(['status' => 'Disabled']);
         
@@ -199,13 +265,17 @@ class CandidateController extends Controller
      */
     public function enable($id)
     {
+        // Check election status before allowing enable
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.candidates')
+                ->with('error', 'Cannot enable candidates. Election is not in Pending status.');
+        }
+        
         $candidate = Candidate::findOrFail($id);
         $candidate->update(['status' => 'Active']);
         
         return redirect()->route('display.candidates')
             ->with('success', 'Candidate enabled successfully!');
     }
-
-    
-
 }

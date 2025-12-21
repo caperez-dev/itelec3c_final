@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Voter;
+use App\Models\Election;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -10,6 +11,10 @@ class VoterController extends Controller
 {
     public function index(Request $request)
     {
+        // Get current election status
+        $election = Election::find(1);
+        $electionStatus = $election ? $election->status : 'pending';
+        
         $search = $request->input('search');
         
         if ($search) {
@@ -22,20 +27,28 @@ class VoterController extends Controller
                 })
                 ->orderBy('created_at', 'desc')
                 ->paginate(10)
-                ->appends(['search' => $search]); // Preserve search query in pagination links
+                ->appends(['search' => $search]);
         } else {
             $voters = Voter::whereNull('deleted_at')
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
         }
         
-        return view('voters-list', compact('voters'));
+        return view('voters-list', compact('voters', 'electionStatus'));
     }
+
     /**
      * Show the form for creating a new voter
      */
     public function create()
     {
+        // Check election status before allowing create
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('voters.list')
+                ->with('error', 'Cannot register voters. Election is not in Pending status.');
+        }
+        
         return view('create-voter');
     }
 
@@ -46,19 +59,18 @@ class VoterController extends Controller
     {
         do {
             // Get current date in format MMDDYY (e.g., 121625 for Dec 16, 2025)
-            $date = date('mdy'); // Changed from 'mdY' to 'mdy'
+            $date = date('mdy');
             
             // Generate random 9 digits
             $randomDigits = str_pad(rand(0, 999999999), 9, '0', STR_PAD_LEFT);
             
             // Combine to create voter key: elecvotph + date + - + random digits
-            // Example: elecvotph121625-123456789
             $voterKey = 'elecvotph' . $date . '-' . $randomDigits;
             
             // Check if this key already exists
             $exists = Voter::where('voter_key', $voterKey)->exists();
             
-        } while ($exists); // Keep generating until we get a unique key
+        } while ($exists);
         
         return $voterKey;
     }
@@ -68,6 +80,13 @@ class VoterController extends Controller
      */
     public function store(Request $request)
     {
+        // Check election status before allowing store
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('voters.list')
+                ->with('error', 'Cannot register voters. Election is not in Pending status.');
+        }
+        
         // Validations
         $request->validate([
             'fName' => 'required|string|max:255',
@@ -111,6 +130,13 @@ class VoterController extends Controller
      */
     public function edit($id)
     {
+        // Check election status before allowing edit
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('voters.list')
+                ->with('error', 'Cannot edit voters. Election is not in Pending status.');
+        }
+        
         $voter = Voter::findOrFail($id);
         return view('edit-voter', compact('voter'));
     }
@@ -120,6 +146,13 @@ class VoterController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Check election status before allowing update
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('voters.list')
+                ->with('error', 'Cannot update voters. Election is not in Pending status.');
+        }
+        
         $voter = Voter::findOrFail($id);
         
         // Validations
@@ -159,6 +192,13 @@ class VoterController extends Controller
      */
     public function destroy($id)
     {
+        // Check election status before allowing delete
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('voters.list')
+                ->with('error', 'Cannot delete voters. Election is not in Pending status.');
+        }
+        
         $voter = Voter::findOrFail($id);
         $voter->deleted_at = now();
         $voter->save();
@@ -172,6 +212,13 @@ class VoterController extends Controller
      */
     public function disable($id)
     {
+        // Check election status before allowing disable
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('voters.list')
+                ->with('error', 'Cannot disable voters. Election is not in Pending status.');
+        }
+        
         $voter = Voter::findOrFail($id);
         $voter->status = 'Disabled';
         $voter->save();
@@ -182,6 +229,13 @@ class VoterController extends Controller
 
     public function enable($id)
     {
+        // Check election status before allowing enable
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('voters.list')
+                ->with('error', 'Cannot enable voters. Election is not in Pending status.');
+        }
+        
         $voter = Voter::findOrFail($id);
         $voter->status = 'Active';
         $voter->save();
@@ -190,51 +244,69 @@ class VoterController extends Controller
             ->with('success', 'Voter enabled successfully!');
     }
 
-public function ArchivedVotersDisplay(Request $request)
-{
-    $search = $request->input('search');
-    
-    if ($search) {
-        $voters = Voter::onlyTrashed()
-            ->where(function($query) use ($search) {
-                $query->where('first_name', 'LIKE', "%$search%")
-                    ->orWhere('last_name', 'LIKE', "%$search%")
-                    ->orWhere('voter_key', 'LIKE', "%$search%")
-                    ->orWhere('gender', 'LIKE', "%$search%")
-                    ->orWhere('contact_information', 'LIKE', "%$search%");
-            })
-            ->orderBy('deleted_at', 'desc')
-            ->get();
-    } else {
-        $voters = Voter::onlyTrashed()
-            ->orderBy('deleted_at', 'desc')
-            ->get();
+    public function ArchivedVotersDisplay(Request $request)
+    {
+        // Get current election status
+        $election = Election::find(1);
+        $electionStatus = $election ? $election->status : 'pending';
+        
+        $search = $request->input('search');
+        
+        if ($search) {
+            $voters = Voter::onlyTrashed()
+                ->where(function($query) use ($search) {
+                    $query->where('first_name', 'LIKE', "%$search%")
+                        ->orWhere('last_name', 'LIKE', "%$search%")
+                        ->orWhere('voter_key', 'LIKE', "%$search%")
+                        ->orWhere('gender', 'LIKE', "%$search%")
+                        ->orWhere('contact_information', 'LIKE', "%$search%");
+                })
+                ->orderBy('deleted_at', 'desc')
+                ->get();
+        } else {
+            $voters = Voter::onlyTrashed()
+                ->orderBy('deleted_at', 'desc')
+                ->get();
+        }
+        
+        return view('ArchivedVotersDisplay', compact('voters', 'electionStatus'));
     }
-    
-    return view('ArchivedVotersDisplay', compact('voters'));
-}
 
-public function restore($id)
-{
-    $voter = Voter::onlyTrashed()->findOrFail($id);
-    $voter->restore();
-    
-    return redirect()->route('display.archived.voters')
-        ->with('success', 'Voter restored successfully!');
-}
-
-public function forceDelete($id)
-{
-    $voter = Voter::onlyTrashed()->findOrFail($id);
-    
-    // Delete image if exists
-    if ($voter->imagepath) {
-        Storage::disk('public')->delete($voter->imagepath);
+    public function restore($id)
+    {
+        // Check election status before allowing restore
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.archived.voters')
+                ->with('error', 'Cannot restore voters. Election is not in Pending status.');
+        }
+        
+        $voter = Voter::onlyTrashed()->findOrFail($id);
+        $voter->restore();
+        
+        return redirect()->route('display.archived.voters')
+            ->with('success', 'Voter restored successfully!');
     }
-    
-    $voter->forceDelete();
-    
-    return redirect()->route('display.archived.voters')
-        ->with('success', 'Voter permanently deleted!');
-}
+
+    public function forceDelete($id)
+    {
+        // Check election status before allowing force delete
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.archived.voters')
+                ->with('error', 'Cannot permanently delete voters. Election is not in Pending status.');
+        }
+        
+        $voter = Voter::onlyTrashed()->findOrFail($id);
+        
+        // Delete image if exists
+        if ($voter->imagepath) {
+            Storage::disk('public')->delete($voter->imagepath);
+        }
+        
+        $voter->forceDelete();
+        
+        return redirect()->route('display.archived.voters')
+            ->with('success', 'Voter permanently deleted!');
+    }
 }

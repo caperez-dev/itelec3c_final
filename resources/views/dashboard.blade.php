@@ -115,17 +115,22 @@
             font-size: 0.875rem;
         }
         
-        .status-active {
+        .status-active, .status-ongoing {
             background-color: #d1fae5;
             color: #065f46;
         }
         
-        .status-inactive {
+        .status-inactive, .status-ended {
             background-color: #fee2e2;
             color: #991b1b;
         }
         
         .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-on-hold {
             background-color: #fef3c7;
             color: #92400e;
         }
@@ -142,6 +147,77 @@
         .election-status-card h3 {
             color: white;
             margin-bottom: 20px;
+        }
+
+        .election-controls {
+            margin-top: 30px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .election-control-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-start {
+            background-color: #059669;
+            color: white;
+        }
+
+        .btn-start:hover {
+            background-color: #047857;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-pause {
+            background-color: #d97706;
+            color: white;
+        }
+
+        .btn-pause:hover {
+            background-color: #b45309;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(217, 119, 6, 0.3);
+        }
+
+        .btn-resume {
+            background-color: #0891b2;
+            color: white;
+        }
+
+        .btn-resume:hover {
+            background-color: #0e7490;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(8, 145, 178, 0.3);
+        }
+
+        .btn-end {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-end:hover {
+            background-color: #b91c1c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
         }
         
         .quick-actions {
@@ -206,6 +282,10 @@
             <li class="nav-item"><a href="{{ url('display-vote-counts') }}" class="nav-link text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M480-360h120q33 0 56.5-23.5T680-440v-240q0-33-23.5-56.5T600-760h-80q-33 0-56.5 23.5T440-680v80q0 33 23.5 56.5T520-520h80v80H480v80Zm120-240h-80v-80h80v80ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320Zm0-80h480v-480H320v480ZM160-80q-33 0-56.5-23.5T80-160v-560h80v560h560v80H160Zm160-720v480-480Z"/></svg>    
                 Vote Counts</a></li>
+            <li class="nav-item">
+                <a href="{{ url('/settings') }}" class="nav-link text-white active">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></svg>
+                Settings</a></li>
         </ul>
     </div>
     <div class="container" style="padding-top: 40px;">
@@ -273,8 +353,8 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
                                         <h4 class="mb-2">Current Status:</h4>
-                                        <span class="status-badge">
-                                            
+                                        <span class="status-badge status-{{ strtolower(str_replace(' ', '-', $electionStatus ?? 'pending')) }}">
+                                            {{ ucfirst($electionStatus ?? 'pending') }}
                                         </span>
                                     </div>
                                     <div class="text-end">
@@ -285,6 +365,63 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Election Control Buttons -->
+                    <div class="election-controls">
+                        <h3 class="mb-3" style="color: #1e40af;"><i class="fas fa-sliders-h me-2"></i>Election Controls</h3>
+                        <div>
+                            @if(strtolower($electionStatus ?? 'pending') === 'pending')
+                                <!-- Show only Start Election button when status is Pending -->
+                                <form action="{{ route('election.start') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="election-control-btn btn-start">
+                                        <i class="fas fa-play"></i>
+                                        Start Election
+                                    </button>
+                                </form>
+                            @elseif(strtolower($electionStatus ?? 'pending') === 'ongoing')
+                                <!-- Show Pause and End buttons when status is Ongoing -->
+                                <form action="{{ route('election.pause') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="election-control-btn btn-pause">
+                                        <i class="fas fa-pause"></i>
+                                        Pause Election
+                                    </button>
+                                </form>
+
+                                <form action="{{ route('election.end') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="election-control-btn btn-end" onclick="return confirm('Are you sure you want to end the election? This action cannot be undone.')">
+                                        <i class="fas fa-stop"></i>
+                                        End Election
+                                    </button>
+                                </form>
+                            @elseif(strtolower($electionStatus ?? 'pending') === 'on hold')
+                                <!-- Show Resume and End buttons when status is On Hold -->
+                                <form action="{{ route('election.resume') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="election-control-btn btn-resume">
+                                        <i class="fas fa-play-circle"></i>
+                                        Resume Election
+                                    </button>
+                                </form>
+
+                                <form action="{{ route('election.end') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="election-control-btn btn-end" onclick="return confirm('Are you sure you want to end the election? This action cannot be undone.')">
+                                        <i class="fas fa-stop"></i>
+                                        End Election
+                                    </button>
+                                </form>
+                            @else
+                                <!-- Election has ended or other status -->
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Election has ended. No controls available.
+                                </p>
+                            @endif
                         </div>
                     </div>
                     

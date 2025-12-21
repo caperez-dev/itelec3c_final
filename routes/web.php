@@ -26,16 +26,21 @@ Route::get('/dashboard', function () {
         ? round(($votedUsers / $registeredVoters) * 100, 2) 
         : 0;
     
-    // You'll need to add these counts for candidates and positions later
+    // Count candidates and positions
     $totalCandidates = \App\Models\Candidate::whereNull('deleted_at')->count();
     $totalPositions = \App\Models\Position::whereNull('deleted_at')->count();
+    
+    // Get current election status (ID = 1)
+    $election = \App\Models\Election::find(1);
+    $electionStatus = $election ? $election->status : 'pending';
     
     return view('dashboard', compact(
         'registeredVoters',
         'votedUsers',
         'voterTurnout',
         'totalCandidates',
-        'totalPositions'
+        'totalPositions',
+        'electionStatus'
     ));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -62,14 +67,22 @@ Route::middleware('auth')->group(function () {
     Route::post('/register-voter', [VoterController::class, 'store'])->name('register.voter.store');
     Route::get('/voter-registered/{id}', [VoterController::class, 'registrationSuccess'])->name('voter.registered.success');
     Route::get('/voters', [VoterController::class, 'index'])->name('voters.list');
-Route::get('/voters/{id}/edit', [VoterController::class, 'edit'])->name('voters.edit');
-Route::put('/voters/{id}', [VoterController::class, 'update'])->name('voters.update');
-Route::delete('/voters/{id}', [VoterController::class, 'destroy'])->name('voters.destroy');
-Route::post('/voters/{id}/disable', [VoterController::class, 'disable'])->name('voters.disable');
-Route::post('/voters/{id}/enable', [VoterController::class, 'enable'])->name('voters.enable');
-Route::get('/display-archived-voters', [VoterController::class, 'ArchivedVotersDisplay'])->name('display.archived.voters');
+    Route::get('/voters/{id}/edit', [VoterController::class, 'edit'])->name('voters.edit');
+    Route::put('/voters/{id}', [VoterController::class, 'update'])->name('voters.update');
+    Route::delete('/voters/{id}', [VoterController::class, 'destroy'])->name('voters.destroy');
+    Route::post('/voters/{id}/disable', [VoterController::class, 'disable'])->name('voters.disable');
+    Route::post('/voters/{id}/enable', [VoterController::class, 'enable'])->name('voters.enable');
+    Route::get('/display-archived-voters', [VoterController::class, 'ArchivedVotersDisplay'])->name('display.archived.voters');
     Route::post('restore-voter/{id}', [VoterController::class, 'restore'])->name('restore.voter');
     Route::delete('force-delete-voter/{id}', [VoterController::class, 'forceDelete'])->name('force.delete.voter');
+});
+
+// Election Control Routes
+Route::middleware('auth')->group(function () {
+    Route::post('/election/start', [App\Http\Controllers\ElectionController::class, 'start'])->name('election.start');
+    Route::post('/election/pause', [App\Http\Controllers\ElectionController::class, 'pause'])->name('election.pause');
+    Route::post('/election/resume', [App\Http\Controllers\ElectionController::class, 'resume'])->name('election.resume');
+    Route::post('/election/end', [App\Http\Controllers\ElectionController::class, 'end'])->name('election.end');
 });
 
 // Candidate Routes - Admin Only
@@ -78,9 +91,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/register-candidate', [CandidateController::class, 'create'])->name('register.candidate');
     Route::post('/register-candidate', [CandidateController::class, 'store'])->name('register.candidate.store');
     Route::get('/candidates/{id}/edit', [CandidateController::class, 'edit'])->name('candidates.edit');
-Route::put('/candidates/{id}', [CandidateController::class, 'update'])->name('candidates.update');
-Route::delete('/candidates/{id}', [CandidateController::class, 'destroy'])->name('candidates.destroy');
-Route::delete('force-delete-candidate/{id}', [CandidateController::class, 'forceDelete'])->name('force.delete.candidate');
+    Route::put('/candidates/{id}', [CandidateController::class, 'update'])->name('candidates.update');
+    Route::delete('/candidates/{id}', [CandidateController::class, 'destroy'])->name('candidates.destroy');
+    Route::delete('force-delete-candidate/{id}', [CandidateController::class, 'forceDelete'])->name('force.delete.candidate');
     Route::post('/candidates/{id}/disable', [CandidateController::class, 'disable'])->name('candidates.disable');
     Route::post('/candidates/{id}/enable', [CandidateController::class, 'enable'])->name('candidates.enable');
 });
@@ -116,3 +129,14 @@ Route::put('/positions/{id}', [PositionController::class, 'update'])->name('posi
 // Archived Candidates Routes
 Route::get('/display-archived-candidates', [CandidateController::class, 'ArchivedCandidatesDisplay'])->name('display.archived.candidates');
 Route::post('restore-candidate/{id}', [CandidateController::class, 'restore'])->name('restore.candidate');
+
+// Settings Routes
+Route::middleware('auth')->group(function () {
+    // View settings page
+    Route::get('/settings', function () {
+        return view('settings');
+    })->name('settings');
+    
+    // Hard reset election system
+    Route::post('/election/hard-reset', [App\Http\Controllers\ElectionController::class, 'hardReset'])->name('election.hard-reset');
+});

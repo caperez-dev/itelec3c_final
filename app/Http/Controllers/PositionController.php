@@ -3,19 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\Models\Position;
+use App\Models\Election;
 use Illuminate\Http\Request;
 
 class PositionController extends Controller
 {   
-    // Create Position form - Already exists
+    // Create Position form
     public function create()
     {
+        // Check election status before allowing create
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.positions')
+                ->with('error', 'Cannot add positions. Election is not in Pending status.');
+        }
+        
         return view('create-position');
     }
     
     // Store new position
     public function store(Request $request)
     {
+        // Check election status before allowing store
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.positions')
+                ->with('error', 'Cannot add positions. Election is not in Pending status.');
+        }
+        
         $validated = $request->validate([
             'position_name' => 'required|string|max:255|unique:positions,position_name',
             'description' => 'nullable|string|max:500',
@@ -30,6 +45,10 @@ class PositionController extends Controller
     // Positions Table
     public function PositionsDisplay(Request $request)
     {
+        // Get current election status
+        $election = Election::find(1);
+        $electionStatus = $election ? $election->status : 'pending';
+        
         $search = $request->input('search');
         
         if ($search) {
@@ -41,11 +60,16 @@ class PositionController extends Controller
         } else {
             $positions = Position::paginate(10);
         }
-        return view('PositionsDisplay', compact('positions'));
+        
+        return view('PositionsDisplay', compact('positions', 'electionStatus'));
     }
     
     public function ArchivedPositionsDisplay(Request $request)
     {
+        // Get current election status
+        $election = Election::find(1);
+        $electionStatus = $election ? $election->status : 'pending';
+        
         $search = $request->input('search');
         
         if ($search) {
@@ -57,12 +81,20 @@ class PositionController extends Controller
         } else {
             $positions = Position::onlyTrashed()->get();
         }
-        return view('ArchivedPositionsDisplay', compact('positions'));
+        
+        return view('ArchivedPositionsDisplay', compact('positions', 'electionStatus'));
     }
     
     // Soft Delete Position
     public function delete($id)
     {
+        // Check election status before allowing delete
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.positions')
+                ->with('error', 'Cannot delete positions. Election is not in Pending status.');
+        }
+        
         $position = Position::findOrFail($id);
         $position->delete();
         
@@ -73,6 +105,13 @@ class PositionController extends Controller
     // Restore Position
     public function restore($id)
     {
+        // Check election status before allowing restore
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.archived.positions')
+                ->with('error', 'Cannot restore positions. Election is not in Pending status.');
+        }
+        
         $position = Position::onlyTrashed()->findOrFail($id);
         $position->restore();
         
@@ -83,6 +122,13 @@ class PositionController extends Controller
     // Force Delete Position (Permanent)
     public function forceDelete($id)
     {
+        // Check election status before allowing force delete
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.archived.positions')
+                ->with('error', 'Cannot permanently delete positions. Election is not in Pending status.');
+        }
+        
         $position = Position::onlyTrashed()->findOrFail($id);
         $position->forceDelete();
         
@@ -93,6 +139,13 @@ class PositionController extends Controller
     // Edit Position form
     public function edit($id)
     {
+        // Check election status before allowing edit
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.positions')
+                ->with('error', 'Cannot edit positions. Election is not in Pending status.');
+        }
+        
         $position = Position::findOrFail($id);
         return view('edit-position', compact('position'));
     }
@@ -100,6 +153,13 @@ class PositionController extends Controller
     // Update Position
     public function update(Request $request, $id)
     {
+        // Check election status before allowing update
+        $election = Election::find(1);
+        if ($election && strtolower($election->status) !== 'pending') {
+            return redirect()->route('display.positions')
+                ->with('error', 'Cannot update positions. Election is not in Pending status.');
+        }
+        
         $position = Position::findOrFail($id);
         
         $validated = $request->validate([
@@ -112,5 +172,4 @@ class PositionController extends Controller
         return redirect()->route('display.positions')
             ->with('success', 'Position updated successfully!');
     }
-
 }
