@@ -63,18 +63,37 @@ class PositionController extends Controller
         $electionStatus = $election ? $election->status : 'pending';
         
         $search = $request->input('search');
+        $sort_by = $request->input('sort_by');
+        $sort_dir = strtolower($request->input('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
         
+        // Build query
+        $query = Position::query();
         if ($search) {
-            $positions = Position::where('position_name', 'LIKE', "%$search%")
-                ->orWhere('position_id', 'LIKE', "%$search%")
-                ->orWhere('description', 'LIKE', "%$search%")
-                ->paginate(10)
-                ->appends(['search' => $search]);
-        } else {
-            $positions = Position::paginate(10);
+            $query->where(function($q) use ($search) {
+                $q->where('position_name', 'LIKE', "%$search%")
+                  ->orWhere('position_id', 'LIKE', "%$search%")
+                  ->orWhere('description', 'LIKE', "%$search%");
+            });
         }
+
+        // Sorting
+        $allowed = ['position_id', 'position_name', 'description', 'created_at'];
+        if (!in_array($sort_by, $allowed)) {
+            $sort_by = null;
+        }
+
+        if ($sort_by) {
+            if ($sort_by === 'position_id') {
+                $query->orderBy('position_id', $sort_dir);
+            } else {
+                $query->orderBy($sort_by, $sort_dir);
+            }
+        }
+
+        $positions = $query->paginate(10)
+            ->appends($request->only(['search','sort_by','sort_dir']));
         
-        return view('PositionsDisplay', compact('positions', 'electionStatus'));
+        return view('PositionsDisplay', compact('positions', 'electionStatus', 'sort_by', 'sort_dir'));
     }
     
     public function ArchivedPositionsDisplay(Request $request)

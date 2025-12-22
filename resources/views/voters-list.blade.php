@@ -28,6 +28,12 @@
             background-color: #1e40af;
             color: white;
         }
+        .table-header a {
+            color: black !important;
+        }
+        .table-header a:hover {
+            color: black !important;
+        }
         
         .btn-register {
             background-color: #1e40af;
@@ -285,29 +291,110 @@
                             @endif
                         </div>
                     </div>
+
+                    <!-- Search + Filter (always visible) -->
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <form action="{{ url('/voters') }}" method="GET" class="flex-grow-1 me-3">
+                            <div class="input-group">
+                                <input type="search" name="search" class="form-control" placeholder="Search voter..." value="{{ request('search') }}">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+                                    <i class="fas fa-filter"></i> Filter
+                                </button>
+                            </div>
+
+                            <div class="collapse mt-2" id="filterCollapse">
+                                <div class="card card-body p-3">
+                                    <div class="row g-2">
+                                        <div class="col-md-3">
+                                            <label class="form-label small">Status</label>
+                                            <select name="status" class="form-select">
+                                                <option value="all" {{ request('status')=='all' ? 'selected' : (request('status') ? '' : 'selected') }}>All</option>
+                                                <option value="Active" {{ request('status')=='Active' ? 'selected' : '' }}>Active</option>
+                                                <option value="Disabled" {{ request('status')=='Disabled' ? 'selected' : '' }}>Disabled</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label small">Gender</label>
+                                            <select name="gender" class="form-select">
+                                                <option value="all" {{ request('gender')=='all' ? 'selected' : (request('gender') ? '' : 'selected') }}>All</option>
+                                                <option value="Male" {{ request('gender')=='Male' ? 'selected' : '' }}>Male</option>
+                                                <option value="Female" {{ request('gender')=='Female' ? 'selected' : '' }}>Female</option>
+                                                <option value="Other" {{ request('gender')=='Other' ? 'selected' : '' }}>Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label small">Registered From</label>
+                                            <input type="date" name="registered_from" class="form-control" value="{{ request('registered_from') }}">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label small">Registered To</label>
+                                            <input type="date" name="registered_to" class="form-control" value="{{ request('registered_to') }}">
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                                        <a href="{{ url('/voters') }}" class="btn btn-secondary">Reset</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="d-flex flex-column align-items-end gap-2">
+                            @if(strtolower($electionStatus ?? 'pending') === 'pending')
+                                <button class="btn btn-outline-primary" id="toggleActions" onclick="toggleActionsColumn()">
+                                    <i class="fas fa-cog"></i> Actions
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+
                     @if($voters->total() > 0)
                         <div class="table-responsive">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <form action="{{ url('/voters') }}" method="GET" class="flex-grow-1 me-3">
-                                    <div class="input-group">
-                                        <input type="search" name="search" class="form-control" placeholder="Search voter..." value="{{ request('search') }}">
-                                        <input type="submit" value="Search" class="btn btn-primary">
-                                    </div>
-                                </form>
-                                @if(strtolower($electionStatus ?? 'pending') === 'pending')
-                                    <button class="btn btn-outline-primary" id="toggleActions" onclick="toggleActionsColumn()">
-                                        <i class="fas fa-cog"></i> Actions
-                                    </button>
-                                @endif
-                            </div>
                             <table class="table table-hover align-middle">
                                 <thead class="table-header">
                                     <tr>
                                         <th scope="col"></th>
-                                        <th scope="col">Voter ID</th>
-                                        <th scope="col">Full Name</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Registered Date</th>
+                                        <th scope="col">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'voter_id', 'sort_dir' => (request('sort_by') == 'voter_id' && request('sort_dir') == 'asc') ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                Voter ID
+                                                @if(request('sort_by') == 'voter_id')
+                                                    <i class="fas fa-sort-{{ request('sort_dir') == 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @else
+                                                    <i class="fas fa-sort ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th scope="col">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'last_name', 'sort_dir' => (request('sort_by') == 'last_name' && request('sort_dir') == 'asc') ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                Full Name
+                                                @if(request('sort_by') == 'last_name')
+                                                    <i class="fas fa-sort-{{ request('sort_dir') == 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @else
+                                                    <i class="fas fa-sort ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th scope="col">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'status', 'sort_dir' => (request('sort_by') == 'status' && request('sort_dir') == 'asc') ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                Status
+                                                @if(request('sort_by') == 'status')
+                                                    <i class="fas fa-sort-{{ request('sort_dir') == 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @else
+                                                    <i class="fas fa-sort ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th scope="col">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'created_at', 'sort_dir' => (request('sort_by') == 'created_at' && request('sort_dir') == 'asc') ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                Registered Date
+                                                @if(request('sort_by') == 'created_at')
+                                                    <i class="fas fa-sort-{{ request('sort_dir') == 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @else
+                                                    <i class="fas fa-sort ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
                                         @if(strtolower($electionStatus ?? 'pending') === 'pending')
                                             <th scope="col" class="actions-column" style="display: none;"></th>
                                         @endif

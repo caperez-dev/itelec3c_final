@@ -26,7 +26,15 @@
         
         .table-header {
             background-color: #1e40af;
-            color: white;
+            color: black;
+        }
+        .table-header a {
+            color: black !important;
+            text-decoration: none;
+        }
+        .table-header a:hover {
+            color: black !important;
+            text-decoration: none;
         }
         
         .btn-register {
@@ -170,24 +178,85 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h1 class="mb-0">Votes List</h1>
                     </div>
-                    
+                    <!-- Search bar (always visible so it doesn't disappear when query has no matches) -->
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <form action="{{ url('/display-votes') }}" method="GET" class="flex-grow-1 me-3">
+                            <div class="input-group">
+                                <input type="search" name="search" class="form-control" placeholder="Search vote..." value="{{ request('search') }}" autocomplete="off">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                                <button id="voteFilterBtn" type="button" class="btn btn-outline-secondary ms-2" data-bs-toggle="collapse" data-bs-target="#voteFilters" aria-expanded="false" aria-controls="voteFilters">
+                                    <i class="fas fa-filter"></i> Filter
+                                </button>
+                            </div>
+
+                            <div class="collapse mt-3 @if(request('applied_from') || request('applied_to')) show @endif" id="voteFilters">
+                                <div class="card card-body p-3">
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label small">Voted From</label>
+                                            <input type="date" name="applied_from" class="form-control" value="{{ request('applied_from') }}">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label small">Voted To</label>
+                                            <input type="date" name="applied_to" class="form-control" value="{{ request('applied_to') }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3 text-end">
+                                        <a href="{{ url('/display-votes') }}" class="btn btn-secondary">Reset</a>
+                                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
                     @if($votes->total() > 0)
                         <div class="table-responsive">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <form action="{{ url('/display-votes') }}" method="GET" class="flex-grow-1 me-3">
-                                    <div class="input-group">
-                                        <input type="search" name="search" class="form-control" placeholder="Search vote..." value="{{ request('search') }}" autocomplete="off">
-                                        <input type="submit" value="Search" class="btn btn-primary">
-                                    </div>
-                                </form>
-                            </div>
                             <table class="table table-hover align-middle">
                                 <thead class="table-header">
                                     <tr>
-                                        <th scope="col">Vote ID</th>
-                                        <th scope="col">Voter Name</th>
-                                        <th scope="col">Candidate Voted</th>
-                                        <th scope="col">Voted Date</th>
+                                        <th scope="col">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'vote_id', 'sort_dir' => (request('sort_by') == 'vote_id' && request('sort_dir') == 'asc') ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                Vote ID
+                                                @if(request('sort_by') == 'vote_id')
+                                                    <i class="fas fa-sort-{{ request('sort_dir') == 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @else
+                                                    <i class="fas fa-sort ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th scope="col">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'last_name', 'sort_dir' => (request('sort_by') == 'last_name' && request('sort_dir') == 'asc') ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                Voter Name
+                                                @if(request('sort_by') == 'last_name')
+                                                    <i class="fas fa-sort-{{ request('sort_dir') == 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @else
+                                                    <i class="fas fa-sort ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th scope="col">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'candidate_name', 'sort_dir' => (request('sort_by') == 'candidate_name' && request('sort_dir') == 'asc') ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                Candidate Voted
+                                                @if(request('sort_by') == 'candidate_name')
+                                                    <i class="fas fa-sort-{{ request('sort_dir') == 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @else
+                                                    <i class="fas fa-sort ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th scope="col">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'created_at', 'sort_dir' => (request('sort_by') == 'created_at' && request('sort_dir') == 'asc') ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                Voted Date
+                                                @if(request('sort_by') == 'created_at')
+                                                    <i class="fas fa-sort-{{ request('sort_dir') == 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @else
+                                                    <i class="fas fa-sort ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -264,5 +333,23 @@
 </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz4YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script>
+        // Fallback: toggle collapse class if Bootstrap data API isn't initialized or JS errors occur
+        (function(){
+            try{
+                var btn = document.getElementById('voteFilterBtn');
+                var panel = document.getElementById('voteFilters');
+                if(btn && panel){
+                    btn.addEventListener('click', function(e){
+                        // if Bootstrap handled it, this will just toggle too; safe fallback
+                        e.preventDefault();
+                        panel.classList.toggle('show');
+                    });
+                }
+            }catch(err){
+                // silent
+            }
+        })();
+    </script>
 </body>
 </html>

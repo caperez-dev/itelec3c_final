@@ -19,27 +19,82 @@ class CandidateController extends Controller
         // Get current election status
         $election = Election::find(1);
         $electionStatus = $election ? $election->status : 'pending';
-        
+        // Load filter inputs
         $search = $request->input('search');
-        
+        $status = $request->input('status');
+        $position_id = $request->input('position_id');
+        $party_affiliation = $request->input('party_affiliation');
+        $applied_from = $request->input('applied_from');
+        $applied_to = $request->input('applied_to');
+
+        // Base query joining positions so we can show position_name
+        $query = Candidate::join('positions', 'candidates.position_id', '=', 'positions.position_id')
+            ->select('candidates.*', 'positions.position_name');
+
         if ($search) {
-            $candidates = Candidate::join('positions', 'candidates.position_id', '=', 'positions.position_id')
-                ->where(function($query) use ($search) {
-                    $query->where('candidates.candidate_id', 'LIKE', "%$search%")
-                        ->orWhere('candidates.candidate_name', 'LIKE', "%$search%")
-                        ->orWhere('candidates.party_affiliation', 'LIKE', "%$search%")
-                        ->orWhere('positions.position_name', 'LIKE', "%$search%");
-                })
-                ->select('candidates.*', 'positions.position_name')
-                ->paginate(10)
-                ->appends(['search' => $search]);
-        } else {
-            $candidates = Candidate::join('positions', 'candidates.position_id', '=', 'positions.position_id')
-                ->select('candidates.*', 'positions.position_name')
-                ->paginate(10);
+            $query->where(function($q) use ($search) {
+                $q->where('candidates.candidate_id', 'LIKE', "%$search%")
+                  ->orWhere('candidates.candidate_name', 'LIKE', "%$search%")
+                  ->orWhere('candidates.party_affiliation', 'LIKE', "%$search%")
+                  ->orWhere('positions.position_name', 'LIKE', "%$search%");
+            });
         }
-        
-        return view('CandidatesDisplay', compact('candidates', 'electionStatus'));
+
+        if ($status) {
+            $query->where('candidates.status', $status);
+        }
+
+        if ($position_id) {
+            $query->where('candidates.position_id', $position_id);
+        }
+
+        if ($party_affiliation) {
+            $query->where('candidates.party_affiliation', 'LIKE', "%$party_affiliation%");
+        }
+
+        if ($applied_from && $applied_to) {
+            $from = $applied_from . ' 00:00:00';
+            $to = $applied_to . ' 23:59:59';
+            $query->whereBetween('candidates.created_at', [$from, $to]);
+        } else if ($applied_from) {
+            $query->where('candidates.created_at', '>=', $applied_from . ' 00:00:00');
+        } else if ($applied_to) {
+            $query->where('candidates.created_at', '<=', $applied_to . ' 23:59:59');
+        }
+
+        // Sorting
+        $sort_by = $request->input('sort_by');
+        $sort_dir = strtolower($request->input('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+
+        $allowedSorts = ['candidate_id', 'candidate_name', 'party_affiliation', 'position_name', 'status', 'created_at'];
+        if (!in_array($sort_by, $allowedSorts)) {
+            $sort_by = null; // leave null to use default DB ordering
+        }
+
+        if ($sort_by) {
+            if ($sort_by === 'position_name') {
+                $query->orderBy('positions.position_name', $sort_dir);
+            } else {
+                $query->orderBy('candidates.' . $sort_by, $sort_dir);
+            }
+        }
+
+        $candidates = $query->paginate(10)
+            ->appends($request->only(['search','status','position_id','party_affiliation','applied_from','applied_to','sort_by','sort_dir']));
+
+        // Provide positions list for the filter select
+        $positions = \App\Models\Position::whereNull('deleted_at')->orderBy('position_name')->get();
+
+        // Provide distinct party affiliations for the filter dropdown
+        $partyAffiliations = Candidate::whereNull('deleted_at')
+            ->whereNotNull('party_affiliation')
+            ->where('party_affiliation', '<>', '')
+            ->select('party_affiliation')
+            ->distinct()
+            ->orderBy('party_affiliation')
+            ->pluck('party_affiliation');
+
+        return view('CandidatesDisplay', compact('candidates', 'electionStatus', 'positions', 'partyAffiliations', 'sort_by', 'sort_dir'));
     }
 
     /**

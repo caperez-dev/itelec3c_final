@@ -26,7 +26,15 @@
         
         .table-header {
             background-color: #1e40af;
-            color: white;
+            color: black;
+        }
+        .table-header a {
+            color: black !important;
+            text-decoration: none;
+        }
+        .table-header a:hover {
+            color: black !important;
+            text-decoration: none;
         }
         
         .btn-add {
@@ -242,28 +250,64 @@
                             @endif
                         </div>
                     </div>
+                    <!-- Search bar (always visible so it doesn't disappear when query has no matches) -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <form action="{{ url('/display-positions') }}" method="GET" class="flex-grow-1 me-3">
+                            <div class="input-group">
+                                <input type="search" name="search" class="form-control" placeholder="Search position..." value="{{ request('search') }}">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </form>
+                        @if(strtolower($electionStatus ?? 'pending') === 'pending')
+                        @endif
+                    </div>
+
                     @if($positions->count() > 0)
-                            <div class="table-responsive">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <form action="{{ url('/display-positions') }}" method="GET" class="flex-grow-1 me-3">
-                                        <div class="input-group">
-                                            <input type="search" name="search" class="form-control" placeholder="Search position..." value="{{ request('search') }}">
-                                            <input type="submit" value="Search" class="btn btn-primary">
-                                        </div>
-                                    </form>
-                                    @if(strtolower($electionStatus ?? 'pending') === 'pending')
-                                        <button class="btn btn-outline-primary" id="toggleActions" onclick="toggleActionsColumn()">
-                                            <i class="fas fa-cog"></i> Actions
-                                        </button>
-                                    @endif
-                                </div>
-                                <table class="table table-hover align-middle">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
                                 <thead class="table-header">
                                     <tr>
                                         <th scope="col"></th>
-                                        <th scope="col">Position ID</th>
-                                        <th scope="col">Position Name</th>
-                                        <th scope="col">Description</th>
+                                        <th scope="col">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'position_id', 'sort_dir' => (request('sort_by') == 'position_id' && request('sort_dir') == 'asc') ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                Position ID
+                                                @if(request('sort_by') == 'position_id')
+                                                    <i class="fas fa-sort-{{ request('sort_dir') == 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @else
+                                                    <i class="fas fa-sort ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th scope="col">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'position_name', 'sort_dir' => (request('sort_by') == 'position_name' && request('sort_dir') == 'asc') ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                Position Name
+                                                @if(request('sort_by') == 'position_name')
+                                                    <i class="fas fa-sort-{{ request('sort_dir') == 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @else
+                                                    <i class="fas fa-sort ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th scope="col">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'description', 'sort_dir' => (request('sort_by') == 'description' && request('sort_dir') == 'asc') ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                Description
+                                                @if(request('sort_by') == 'description')
+                                                    <i class="fas fa-sort-{{ request('sort_dir') == 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @else
+                                                    <i class="fas fa-sort ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th scope="col">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'created_at', 'sort_dir' => (request('sort_by') == 'created_at' && request('sort_dir') == 'asc') ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                Created Date
+                                                @if(request('sort_by') == 'created_at')
+                                                    <i class="fas fa-sort-{{ request('sort_dir') == 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                @else
+                                                    <i class="fas fa-sort ms-1"></i>
+                                                @endif
+                                            </a>
+                                        </th>
                                         @if(strtolower($electionStatus ?? 'pending') === 'pending')
                                             <th scope="col" class="actions-column" style="display: none;"></th>
                                         @endif
@@ -277,19 +321,17 @@
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                         </th>
-                                        <th scope="row">
-                                            {{ $position->position_id }}
-                                        </th>
+                                        <th scope="row">{{ $position->position_id }}</th>
                                         <td class="fw-semibold">{{ $position->position_name }}</td>
                                         <td>
                                             <span class="description-text" title="{{ $position->description }}">
                                                 {{ $position->description }}
                                             </span>
                                         </td>
+                                        <td>{{ optional($position->created_at)->format('M d, Y') }}</td>
                                         @if(strtolower($electionStatus ?? 'pending') === 'pending')
                                             <td class="actions-column" style="display: none;">
                                                 <a href="{{ url('/edit-position/'.$position->position_id) }}" class="btn btn-sm btn-warning btn-action">Edit</a>
-                                                
                                                 <form action="{{ url('delete/'.$position->position_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this position?');">
                                                     @csrf
                                                     <button type="submit" class="btn btn-sm btn-danger btn-action">Delete</button>

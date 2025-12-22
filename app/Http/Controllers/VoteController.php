@@ -8,6 +8,7 @@ use App\Models\Position;
 use App\Models\Candidate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class VoteController extends Controller
 {
@@ -171,46 +172,97 @@ class VoteController extends Controller
     public function DisplayVotes(Request $request)
     {
         $search = $request->input('search');
-        
+        $applied_from = $request->input('applied_from');
+        $applied_to = $request->input('applied_to');
+
+        // Base query joining voters and candidates
+        $query = Vote::join('voters', 'votes.voter_id', '=', 'voters.voter_id')
+            ->join('candidates', 'votes.candidate_id', '=', 'candidates.candidate_id')
+            ->select('votes.*', 'voters.first_name', 'voters.last_name', 'candidates.candidate_name');
+
         if ($search) {
-            $votes = Vote::join('voters', 'votes.voter_id', '=', 'voters.voter_id')
-                ->join('candidates', 'votes.candidate_id', '=', 'candidates.candidate_id')
-                ->where(function($query) use ($search) {
-                    $query->where('voters.last_name', 'like', "%$search%")
-                        ->orWhere('voters.first_name', 'like', "%$search%")
-                        ->orWhere('votes.vote_id', 'like', "%$search%");
-                })
-                ->select('votes.*', 'voters.first_name', 'voters.last_name', 'candidates.candidate_name')
-                ->paginate(10)
-                ->appends(['search' => $search]);
-        } else {
-            $votes = Vote::join('voters', 'votes.voter_id', '=', 'voters.voter_id')
-                ->join('candidates', 'votes.candidate_id', '=', 'candidates.candidate_id')
-                ->select('votes.*', 'voters.first_name', 'voters.last_name', 'candidates.candidate_name')
-                ->paginate(10);
+            $query->where(function($q) use ($search) {
+                $q->where('voters.last_name', 'like', "%$search%")
+                  ->orWhere('voters.first_name', 'like', "%$search%")
+                  ->orWhere('votes.vote_id', 'like', "%$search%");
+            });
         }
-        
-        return view('VotesDisplay', compact('votes'));
+
+        if ($applied_from && $applied_to) {
+            $from = $applied_from . ' 00:00:00';
+            $to = $applied_to . ' 23:59:59';
+            $query->whereBetween('votes.created_at', [$from, $to]);
+        } else if ($applied_from) {
+            $query->where('votes.created_at', '>=', $applied_from . ' 00:00:00');
+        } else if ($applied_to) {
+            $query->where('votes.created_at', '<=', $applied_to . ' 23:59:59');
+        }
+
+        // Sorting
+        $sort_by = $request->input('sort_by');
+        $sort_dir = strtolower($request->input('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+
+        $allowed = ['vote_id', 'last_name', 'first_name', 'candidate_name', 'created_at'];
+        if (!in_array($sort_by, $allowed)) {
+            $sort_by = null;
+        }
+
+        if ($sort_by) {
+            switch ($sort_by) {
+                case 'last_name':
+                    $query->orderBy('voters.last_name', $sort_dir)->orderBy('voters.first_name', $sort_dir);
+                    break;
+                case 'first_name':
+                    $query->orderBy('voters.first_name', $sort_dir)->orderBy('voters.last_name', $sort_dir);
+                    break;
+                case 'candidate_name':
+                    $query->orderBy('candidates.candidate_name', $sort_dir);
+                    break;
+                case 'created_at':
+                    $query->orderBy('votes.created_at', $sort_dir);
+                    break;
+                default:
+                    $query->orderBy('votes.vote_id', $sort_dir);
+                    break;
+            }
+        }
+
+        $votes = $query->paginate(10)
+            ->appends($request->only(['search','applied_from','applied_to','sort_by','sort_dir']));
+
+        return view('VotesDisplay', compact('votes', 'sort_by', 'sort_dir'));
     }
     
     // Vote Counts Table
     public function VoteCountsDisplay(Request $request)
     {
         $search = $request->input('search');
-        
-        if ($search) {
-            $votecounts = VoteCount::join('candidates', 'vote_counts.candidate_id', '=', 'candidates.candidate_id')
-                ->where('vote_count_id', 'LIKE', "%$search%")
-                ->orWhere('candidates.candidate_name', 'LIKE', "%$search%")
-                ->orWhere('vote_count', 'LIKE', "%$search%")
-                ->select('vote_counts.*', 'candidates.candidate_name')
+
+        // Get active positions (ordered by position_id as requested)
+        $positions = Position::whereNull('deleted_at')
+            ->orderBy('position_id')
+            ->get();
+
+        // For each position, collect its candidates and their vote counts (0 if none), ordered by vote_count desc
+        foreach ($positions as $pos) {
+            $candidates = DB::table('candidates')
+                ->leftJoin('vote_counts', 'candidates.candidate_id', '=', 'vote_counts.candidate_id')
+                ->where('candidates.position_id', $pos->position_id)
+                ->whereNull('candidates.deleted_at')
+                ->select('candidates.candidate_id', 'candidates.candidate_name', DB::raw('COALESCE(vote_counts.vote_count, 0) as vote_count'))
+                ->orderByDesc('vote_count')
                 ->get();
-        } else {
-            $votecounts = VoteCount::join('candidates', 'vote_counts.candidate_id', '=', 'candidates.candidate_id')
-                ->select('vote_counts.*', 'candidates.candidate_name')
-                ->get();
+
+            // If search provided, filter candidates by name
+            if ($search) {
+                $candidates = $candidates->filter(function($c) use ($search) {
+                    return stripos($c->candidate_name, $search) !== false || stripos($c->candidate_id, $search) !== false;
+                })->values();
+            }
+
+            $pos->rankedCandidates = $candidates;
         }
-        
-        return view('VoteCountsDisplay', compact('votecounts'));
+
+        return view('VoteCountsDisplay', compact('positions'));
     }
 }

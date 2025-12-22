@@ -69,6 +69,35 @@
             font-weight: 600;
             color: #1e3a8a;
         }
+        
+        /* Pagination Styles */
+        .pagination {
+            margin-top: 20px;
+            justify-content: center;
+        }
+        
+        .pagination .page-link {
+            color: #1e40af;
+            border: 1px solid #1e40af;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: #1e40af;
+            border-color: #1e40af;
+            color: white;
+        }
+        
+        .pagination .page-link:hover {
+            background-color: #e0e7ff;
+            color: #1e40af;
+        }
+        
+        .pagination-info {
+            text-align: center;
+            color: #64748b;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -123,39 +152,54 @@
                         <h1 class="mb-0">Vote Counts</h1>
                     </div>
                     
-                    @if($votecounts->count() > 0)
-                        <div class="table-responsive">
-                            <form action="{{ url('/display-vote-counts') }}" method="GET" class="mb-3">
-                                <div class="input-group">
-                                    <input type="search" name="search" class="form-control" placeholder="Search candidate..." autocomplete="off">
-                                    <input type="submit" value="Search" class="btn btn-primary">
+                    <!-- Search bar (always visible so it doesn't disappear when query has no matches) -->
+                    <div class="mb-3">
+                        <form action="{{ url('/display-vote-counts') }}" method="GET">
+                            <div class="input-group">
+                                <input type="search" name="search" class="form-control" placeholder="Search candidate..." value="{{ request('search') }}" autocomplete="off">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    @if(isset($positions) && $positions->count())
+                        <div class="row">
+                            @foreach($positions as $position)
+                                <div class="col-12 mb-4">
+                                    <div class="card">
+                                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">{{ $position->position_name }}</h5>
+                                            <small class="text-white-50">{{ $position->rankedCandidates->count() }} candidates</small>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            @if($position->rankedCandidates->count())
+                                                <div class="table-responsive">
+                                                    <table class="table mb-0">
+                                                        <thead class="table-header">
+                                                            <tr>
+                                                                <th style="width:80px;" class="text-center">Rank</th>
+                                                                <th>Candidate</th>
+                                                                <th class="text-center">Votes</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($position->rankedCandidates as $idx => $c)
+                                                            <tr>
+                                                                <td class="text-center"><span class="candidate-rank">{{ $idx + 1 }}</span></td>
+                                                                <td class="candidate-name">{{ $c->candidate_name }}</td>
+                                                                <td class="text-center"><span class="vote-badge"><i class="fas fa-chart-bar me-2"></i>{{ $c->vote_count }}</span></td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            @else
+                                                <div class="p-4 text-center text-muted">No candidates for this position.</div>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
-                            </form>
-                            
-                            <table class="table table-hover align-middle">
-                                <thead class="table-header">
-                                    <tr>
-                                        <th scope="col" class="text-center" style="width: 80px;">Rank</th>
-                                        <th scope="col">Candidate Name</th>
-                                        <th scope="col" class="text-center">Vote Count</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($votecounts as $index => $votecount)
-                                    <tr>
-                                        <td class="text-center">
-                                            <span class="candidate-rank">{{ $index + 1 }}</span>
-                                        </td>
-                                        <td class="candidate-name">{{ $votecount->candidate_name }}</td>
-                                        <td class="text-center">
-                                            <span class="vote-badge">
-                                                <i class="fas fa-chart-bar me-2"></i>{{ $votecount->vote_count }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                            @endforeach
                         </div>
                     @else
                         <div class="empty-state">
@@ -170,6 +214,6 @@
     </div>
 </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz4YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>

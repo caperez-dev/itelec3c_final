@@ -14,25 +14,58 @@ class VoterController extends Controller
         // Get current election status
         $election = Election::find(1);
         $electionStatus = $election ? $election->status : 'pending';
-        
+        // Filters
         $search = $request->input('search');
-        
+        $status = $request->input('status');
+        $gender = $request->input('gender');
+        $registeredFrom = $request->input('registered_from');
+        $registeredTo = $request->input('registered_to');
+
+        $query = Voter::whereNull('deleted_at');
+
         if ($search) {
-            $voters = Voter::whereNull('deleted_at')
-                ->where(function($query) use ($search) {
-                    $query->where('first_name', 'LIKE', "%$search%")
-                        ->orWhere('last_name', 'LIKE', "%$search%")
-                        ->orWhere('gender', 'LIKE', "%$search%")
-                        ->orWhere('contact_information', 'LIKE', "%$search%");
-                })
-                ->orderBy('created_at', 'desc')
-                ->paginate(10)
-                ->appends(['search' => $search]);
-        } else {
-            $voters = Voter::whereNull('deleted_at')
-                ->orderBy('created_at', 'desc')
-                ->paginate(10);
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'LIKE', "%$search%")
+                  ->orWhere('last_name', 'LIKE', "%$search%")
+                  ->orWhere('gender', 'LIKE', "%$search%")
+                  ->orWhere('contact_information', 'LIKE', "%$search%");
+            });
         }
+
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        if ($gender && $gender !== 'all') {
+            $query->where('gender', $gender);
+        }
+
+        if ($registeredFrom) {
+            $query->whereDate('created_at', '>=', $registeredFrom);
+        }
+
+        if ($registeredTo) {
+            $query->whereDate('created_at', '<=', $registeredTo);
+        }
+
+        // Sorting
+        $allowedSorts = ['voter_id','first_name','last_name','gender','contact_information','status','created_at'];
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDir = strtolower($request->input('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+
+        if (in_array($sortBy, $allowedSorts)) {
+            if ($sortBy === 'last_name') {
+                // sort full name by last_name then first_name
+                $query->orderBy('last_name', $sortDir)->orderBy('first_name', $sortDir);
+            } else {
+                $query->orderBy($sortBy, $sortDir);
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $voters = $query->paginate(10)
+                        ->appends($request->only(['search','status','gender','registered_from','registered_to','sort_by','sort_dir']));
         
         return view('voters-list', compact('voters', 'electionStatus'));
     }
