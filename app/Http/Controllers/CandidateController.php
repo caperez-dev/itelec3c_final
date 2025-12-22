@@ -7,6 +7,7 @@ use App\Models\Position;
 use App\Models\VoteCount;
 use App\Models\Election;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CandidateController extends Controller
 {
@@ -71,12 +72,56 @@ class CandidateController extends Controller
             return redirect()->route('display.candidates')
                 ->with('error', 'Cannot add candidates. Election is not in Pending status.');
         }
+
+        $request->merge([
+            'candidate_name' => trim($request->candidate_name),
+            'party_affiliation' => trim($request->party_affiliation),
+        ]);
         
         $validated = $request->validate([
-            'candidate_name' => 'required|string|max:255',
-            'party_affiliation' => 'required|string|max:255',
-            'position_id' => 'required|exists:positions,position_id',
-            'imagepath' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'candidate_name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:255',
+                'regex:/^[a-zA-Z\s\.\-]+$/', // Only letters, spaces, dots, hyphens
+                Rule::unique('candidates')->where(function ($query) use ($request) {
+                    return $query->where('position_id', $request->position_id);
+                }),
+            ],
+            'party_affiliation' => [
+                'required',
+                'string',
+                'min:2',
+                'max:255',
+                'regex:/^[a-zA-Z0-9\s\-\&]+$/', // Alphanumeric with spaces, hyphens, ampersand
+            ],
+            'position_id' => [
+                'required',
+                'exists:positions,position_id',
+                function ($attribute, $value, $fail) {
+                    // Check if position exists and is not deleted
+                    $position = Position::where('position_id', $value)
+                        ->whereNull('deleted_at')
+                        ->first();
+                    
+                    if (!$position) {
+                        $fail('The selected position is invalid.');
+                    }
+                }
+            ],
+            'imagepath' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg,gif',
+                'max:2048', // 2MB
+                'dimensions:min_width=100,min_height=100,max_width=2000,max_height=2000', // Optional size limits
+            ]
+        ], [
+            'candidate_name.regex' => 'Candidate name may only contain letters, spaces, dots, and hyphens.',
+            'candidate_name.unique' => 'A candidate with this name already exists for this position.',
+            'party_affiliation.regex' => 'Party affiliation may only contain letters, numbers, spaces, hyphens, and ampersand.',
+            'imagepath.dimensions' => 'Image must be between 100x100 and 2000x2000 pixels.',
         ]);
 
         // Handle image upload
@@ -139,9 +184,40 @@ class CandidateController extends Controller
         $candidate = Candidate::findOrFail($id);
         
         $validated = $request->validate([
-            'candidate_name' => 'required|string|max:255',
-            'party_affiliation' => 'required|string|max:255',
-            'position_id' => 'required|exists:positions,position_id'
+            'candidate_name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:255',
+                'regex:/^[a-zA-Z\s\.\-]+$/',
+                Rule::unique('candidates')->where(function ($query) use ($request) {
+                    return $query->where('position_id', $request->position_id);
+                })->ignore($candidate->candidate_id, 'candidate_id'),
+            ],
+            'party_affiliation' => [
+                'required',
+                'string',
+                'min:2',
+                'max:255',
+                'regex:/^[a-zA-Z0-9\s\-\&]+$/',
+            ],
+            'position_id' => [
+                'required',
+                'exists:positions,position_id',
+                function ($attribute, $value, $fail) {
+                    $position = Position::where('position_id', $value)
+                        ->whereNull('deleted_at')
+                        ->first();
+                    
+                    if (!$position) {
+                        $fail('The selected position is invalid.');
+                    }
+                }
+            ], [
+                'candidate_name.regex' => 'Candidate name may only contain letters, spaces, dots, and hyphens.',
+                'candidate_name.unique' => 'A candidate with this name already exists for this position.',
+                'party_affiliation.regex' => 'Party affiliation may only contain letters, numbers, spaces, hyphens, and ampersand.',
+            ],
         ]);
 
         $candidate->update([

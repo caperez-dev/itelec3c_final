@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Position;
 use App\Models\Election;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PositionController extends Controller
 {   
@@ -32,10 +33,22 @@ class PositionController extends Controller
         }
         
         $validated = $request->validate([
-            'position_name' => 'required|string|max:255|unique:positions,position_name',
+            'position_name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:255',
+                'regex:/^[a-zA-Z\s\-\&\,\.\(\)\']+$/',
+                Rule::unique('positions')->ignore($position->id ?? null),
+            ],
             'description' => 'nullable|string|max:500',
         ]);
-        
+
+        $validated['position_name'] = trim($validated['position_name']);
+        if (isset($validated['description'])) {
+            $validated['description'] = trim($validated['description']);
+        }
+
         Position::create($validated);
         
         return redirect()->route('display.positions')
@@ -163,10 +176,22 @@ class PositionController extends Controller
         $position = Position::findOrFail($id);
         
         $validated = $request->validate([
-            'position_name' => 'required|string|max:255|unique:positions,position_name,' . $id . ',position_id',
+            'position_name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:255',
+                'regex:/^[a-zA-Z\s\-\&\,\.\(\)\']+$/',
+                Rule::unique('positions')->ignore($position->id ?? null),
+            ],
             'description' => 'nullable|string|max:500',
         ]);
         
+        $validated['position_name'] = trim($validated['position_name']);
+        if (isset($validated['description'])) {
+            $validated['description'] = trim($validated['description']);
+        }
+
         $position->update($validated);
         
         return redirect()->route('display.positions')
