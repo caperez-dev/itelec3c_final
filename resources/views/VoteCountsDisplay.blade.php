@@ -98,6 +98,21 @@
             margin-top: 10px;
             font-size: 0.9rem;
         }
+        
+        .export-btn {
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .export-btn:hover {
+            background-color: #b91c1c;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -150,6 +165,9 @@
                     
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h1 class="mb-0">Vote Counts</h1>
+                        <a href="{{ url('/vote-counts/export-pdf') }}?search={{ request('search') }}" class="btn btn-success" title="Export current view to PDF">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </a>
                     </div>
                     
                     <!-- Search bar (always visible so it doesn't disappear when query has no matches) -->
@@ -161,7 +179,6 @@
                             </div>
                         </form>
                     </div>
-
                     @if(isset($positions) && $positions->count())
                         <div class="row">
                             @foreach($positions as $position)

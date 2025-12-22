@@ -409,4 +409,80 @@ class CandidateController extends Controller
         return redirect()->route('display.candidates')
             ->with('success', 'Candidate enabled successfully!');
     }
+
+    /**
+     * Export candidates to PDF with applied filters and sorting
+     */
+    public function exportPDF(Request $request)
+    {
+        // Load filter inputs (same as index method)
+        $search = $request->input('search');
+        $status = $request->input('status');
+        $position_id = $request->input('position_id');
+        $party_affiliation = $request->input('party_affiliation');
+        $applied_from = $request->input('applied_from');
+        $applied_to = $request->input('applied_to');
+        
+        // Base query joining positions
+        $query = Candidate::join('positions', 'candidates.position_id', '=', 'positions.position_id')
+            ->select('candidates.*', 'positions.position_name');
+        
+        // Apply filters
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('candidates.candidate_id', 'LIKE', "%$search%")
+                ->orWhere('candidates.candidate_name', 'LIKE', "%$search%")
+                ->orWhere('candidates.party_affiliation', 'LIKE', "%$search%")
+                ->orWhere('positions.position_name', 'LIKE', "%$search%");
+            });
+        }
+        
+        if ($status) {
+            $query->where('candidates.status', $status);
+        }
+        
+        if ($position_id) {
+            $query->where('candidates.position_id', $position_id);
+        }
+        
+        if ($party_affiliation) {
+            $query->where('candidates.party_affiliation', 'LIKE', "%$party_affiliation%");
+        }
+        
+        if ($applied_from && $applied_to) {
+            $from = $applied_from . ' 00:00:00';
+            $to = $applied_to . ' 23:59:59';
+            $query->whereBetween('candidates.created_at', [$from, $to]);
+        } else if ($applied_from) {
+            $query->where('candidates.created_at', '>=', $applied_from . ' 00:00:00');
+        } else if ($applied_to) {
+            $query->where('candidates.created_at', '<=', $applied_to . ' 23:59:59');
+        }
+        
+        // Apply sorting
+        $sort_by = $request->input('sort_by');
+        $sort_dir = strtolower($request->input('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+        $allowedSorts = ['candidate_id', 'candidate_name', 'party_affiliation', 'position_name', 'status', 'created_at'];
+        
+        if (in_array($sort_by, $allowedSorts)) {
+            if ($sort_by === 'position_name') {
+                $query->orderBy('positions.position_name', $sort_dir);
+            } else {
+                $query->orderBy('candidates.' . $sort_by, $sort_dir);
+            }
+        }
+        
+        // Get all candidates (no pagination for PDF)
+        $candidates = $query->get();
+        
+        // Generate PDF
+        $pdf = \PDF::loadView('candidates-pdf', compact('candidates'));
+        
+        // Set paper size and orientation
+        $pdf->setPaper('a4', 'landscape');
+        
+        // Download PDF with timestamp
+        $filename = 'candidates_list_' . date('Y-m-d_His') . '.pdf';
+        return $pdf->download($filename);
+    }
 }

@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Voter;
 use App\Models\Election;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use PDF; // Add this import
 
 class VoterController extends Controller
 {
@@ -14,15 +13,16 @@ class VoterController extends Controller
         // Get current election status
         $election = Election::find(1);
         $electionStatus = $election ? $election->status : 'pending';
+        
         // Filters
         $search = $request->input('search');
         $status = $request->input('status');
         $gender = $request->input('gender');
         $registeredFrom = $request->input('registered_from');
         $registeredTo = $request->input('registered_to');
-
+        
         $query = Voter::whereNull('deleted_at');
-
+        
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('first_name', 'LIKE', "%$search%")
@@ -31,31 +31,30 @@ class VoterController extends Controller
                   ->orWhere('contact_information', 'LIKE', "%$search%");
             });
         }
-
+        
         if ($status && $status !== 'all') {
             $query->where('status', $status);
         }
-
+        
         if ($gender && $gender !== 'all') {
             $query->where('gender', $gender);
         }
-
+        
         if ($registeredFrom) {
             $query->whereDate('created_at', '>=', $registeredFrom);
         }
-
+        
         if ($registeredTo) {
             $query->whereDate('created_at', '<=', $registeredTo);
         }
-
+        
         // Sorting
         $allowedSorts = ['voter_id','first_name','last_name','gender','contact_information','status','created_at'];
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDir = strtolower($request->input('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
-
+        
         if (in_array($sortBy, $allowedSorts)) {
             if ($sortBy === 'last_name') {
-                // sort full name by last_name then first_name
                 $query->orderBy('last_name', $sortDir)->orderBy('first_name', $sortDir);
             } else {
                 $query->orderBy($sortBy, $sortDir);
@@ -63,7 +62,7 @@ class VoterController extends Controller
         } else {
             $query->orderBy('created_at', 'desc');
         }
-
+        
         $voters = $query->paginate(10)
                         ->appends($request->only(['search','status','gender','registered_from','registered_to','sort_by','sort_dir']));
         
@@ -71,11 +70,79 @@ class VoterController extends Controller
     }
 
     /**
-     * Show the form for creating a new voter
+     * Export voters to PDF
      */
+    public function exportPDF(Request $request)
+    {
+        // Get the same filters and sorting as the index
+        $search = $request->input('search');
+        $status = $request->input('status');
+        $gender = $request->input('gender');
+        $registeredFrom = $request->input('registered_from');
+        $registeredTo = $request->input('registered_to');
+        
+        $query = Voter::whereNull('deleted_at');
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'LIKE', "%$search%")
+                  ->orWhere('last_name', 'LIKE', "%$search%")
+                  ->orWhere('gender', 'LIKE', "%$search%")
+                  ->orWhere('contact_information', 'LIKE', "%$search%");
+            });
+        }
+        
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+        
+        if ($gender && $gender !== 'all') {
+            $query->where('gender', $gender);
+        }
+        
+        if ($registeredFrom) {
+            $query->whereDate('created_at', '>=', $registeredFrom);
+        }
+        
+        if ($registeredTo) {
+            $query->whereDate('created_at', '<=', $registeredTo);
+        }
+        
+        // Apply same sorting
+        $allowedSorts = ['voter_id','first_name','last_name','gender','contact_information','status','created_at'];
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDir = strtolower($request->input('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+        
+        if (in_array($sortBy, $allowedSorts)) {
+            if ($sortBy === 'last_name') {
+                $query->orderBy('last_name', $sortDir)->orderBy('first_name', $sortDir);
+            } else {
+                $query->orderBy($sortBy, $sortDir);
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+        
+        // Get all voters (no pagination for PDF)
+        $voters = $query->get();
+        
+        // Generate PDF
+        $pdf = PDF::loadView('voters-pdf', compact('voters'));
+        
+        // Set paper size and orientation
+        $pdf->setPaper('A4', 'landscape');
+        
+        // Generate filename with timestamp
+        $filename = 'voters_list_' . date('Y-m-d_His') . '.pdf';
+        
+        // Download PDF
+        return $pdf->download($filename);
+    }
+
+    // ... (rest of the existing methods remain the same)
+    
     public function create()
     {
-        // Check election status before allowing create
         $election = Election::find(1);
         if ($election && strtolower($election->status) !== 'pending') {
             return redirect()->route('voters.list')
@@ -85,42 +152,26 @@ class VoterController extends Controller
         return view('create-voter');
     }
 
-    /**
-     * Generate unique voter key
-     */
     private function generateVoterKey()
     {
         do {
-            // Get current date in format MMDDYY (e.g., 121625 for Dec 16, 2025)
             $date = date('mdy');
-            
-            // Generate random 9 digits
             $randomDigits = str_pad(rand(0, 999999999), 9, '0', STR_PAD_LEFT);
-            
-            // Combine to create voter key: elecvotph + date + - + random digits
             $voterKey = 'elecvotph' . $date . '-' . $randomDigits;
-            
-            // Check if this key already exists
             $exists = Voter::where('voter_key', $voterKey)->exists();
-            
         } while ($exists);
         
         return $voterKey;
     }
 
-    /**
-     * Store a newly created voter in database
-     */
     public function store(Request $request)
     {
-        // Check election status before allowing store
         $election = Election::find(1);
         if ($election && strtolower($election->status) !== 'pending') {
             return redirect()->route('voters.list')
                 ->with('error', 'Cannot register voters. Election is not in Pending status.');
         }
         
-        // Validations
         $request->validate([
             'fName' => 'required|string|max:255',
             'lName' => 'required|string|max:255',
@@ -130,10 +181,8 @@ class VoterController extends Controller
             'absimagepath' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        // Generate unique voter key
         $voterKey = $this->generateVoterKey();
 
-        // Insert record to database
         $voter = Voter::create([
             'voter_key' => $voterKey,
             'first_name' => $request->input('fName'),
@@ -145,25 +194,17 @@ class VoterController extends Controller
             'status' => 'Active'
         ]);
 
-        // Redirect to success page with voter information
         return redirect()->route('voter.registered.success', ['id' => $voter->voter_id]);
     }
 
-    /**
-     * Display voter registration success page
-     */
     public function registrationSuccess($id)
     {
         $voter = Voter::findOrFail($id);
         return view('voter-registered-success', compact('voter'));
     }
 
-    /**
-     * Show the form for editing a voter
-     */
     public function edit($id)
     {
-        // Check election status before allowing edit
         $election = Election::find(1);
         if ($election && strtolower($election->status) !== 'pending') {
             return redirect()->route('voters.list')
@@ -174,12 +215,8 @@ class VoterController extends Controller
         return view('edit-voter', compact('voter'));
     }
 
-    /**
-     * Update the specified voter in database
-     */
     public function update(Request $request, $id)
     {
-        // Check election status before allowing update
         $election = Election::find(1);
         if ($election && strtolower($election->status) !== 'pending') {
             return redirect()->route('voters.list')
@@ -188,7 +225,6 @@ class VoterController extends Controller
         
         $voter = Voter::findOrFail($id);
         
-        // Validations
         $request->validate([
             'fName' => 'required|string|max:255',
             'lName' => 'required|string|max:255',
@@ -198,16 +234,13 @@ class VoterController extends Controller
             'absimagepath' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        // Update voter data
         $voter->first_name = $request->input('fName');
         $voter->last_name = $request->input('lName');
         $voter->birthdate = $request->input('birthdate');
         $voter->gender = $request->input('gender');
         $voter->contact_information = $request->input('contact');
 
-        // Update image if new one is uploaded
         if ($request->hasFile('absimagepath')) {
-            // Delete old image
             if ($voter->imagepath) {
                 Storage::disk('public')->delete($voter->imagepath);
             }
@@ -220,12 +253,8 @@ class VoterController extends Controller
             ->with('success', 'Voter updated successfully!');
     }
 
-    /**
-     * Soft delete the specified voter
-     */
     public function destroy($id)
     {
-        // Check election status before allowing delete
         $election = Election::find(1);
         if ($election && strtolower($election->status) !== 'pending') {
             return redirect()->route('voters.list')
@@ -240,12 +269,8 @@ class VoterController extends Controller
             ->with('success', 'Voter deleted successfully!');
     }
 
-    /**
-     * Disable the specified voter
-     */
     public function disable($id)
     {
-        // Check election status before allowing disable
         $election = Election::find(1);
         if ($election && strtolower($election->status) !== 'pending') {
             return redirect()->route('voters.list')
@@ -262,7 +287,6 @@ class VoterController extends Controller
 
     public function enable($id)
     {
-        // Check election status before allowing enable
         $election = Election::find(1);
         if ($election && strtolower($election->status) !== 'pending') {
             return redirect()->route('voters.list')
@@ -279,7 +303,6 @@ class VoterController extends Controller
 
     public function ArchivedVotersDisplay(Request $request)
     {
-        // Get current election status
         $election = Election::find(1);
         $electionStatus = $election ? $election->status : 'pending';
         
@@ -307,7 +330,6 @@ class VoterController extends Controller
 
     public function restore($id)
     {
-        // Check election status before allowing restore
         $election = Election::find(1);
         if ($election && strtolower($election->status) !== 'pending') {
             return redirect()->route('display.archived.voters')
@@ -323,7 +345,6 @@ class VoterController extends Controller
 
     public function forceDelete($id)
     {
-        // Check election status before allowing force delete
         $election = Election::find(1);
         if ($election && strtolower($election->status) !== 'pending') {
             return redirect()->route('display.archived.voters')
@@ -332,7 +353,6 @@ class VoterController extends Controller
         
         $voter = Voter::onlyTrashed()->findOrFail($id);
         
-        // Delete image if exists
         if ($voter->imagepath) {
             Storage::disk('public')->delete($voter->imagepath);
         }

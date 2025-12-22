@@ -254,7 +254,7 @@
                         </div>
                     </div>
 
-                    <!-- Search bar (always visible so it doesn't disappear when query has no matches) -->
+                    <!-- Search + Filter section -->
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <form action="{{ url('/display-candidates') }}" method="GET" class="flex-grow-1 me-3">
                             <div class="input-group">
@@ -264,7 +264,7 @@
                                     <i class="fas fa-filter"></i> Filter
                                 </button>
                             </div>
-
+                            
                             <div class="collapse mt-3 @if(request('status') || request('position_id') || request('party_affiliation') || request('applied_from') || request('applied_to')) show @endif" id="candidateFilters">
                                 <div class="card card-body p-3">
                                     <div class="row g-2">
@@ -276,7 +276,6 @@
                                                 <option value="Disabled" {{ request('status') == 'Disabled' ? 'selected' : '' }}>Disabled</option>
                                             </select>
                                         </div>
-
                                         <div class="col-md-3">
                                             <label class="form-label small">Position</label>
                                             <select name="position_id" class="form-select">
@@ -288,7 +287,6 @@
                                                 @endif
                                             </select>
                                         </div>
-
                                         <div class="col-md-3">
                                             <label class="form-label small">Party Affiliation</label>
                                             <select name="party_affiliation" class="form-select">
@@ -300,18 +298,15 @@
                                                 @endif
                                             </select>
                                         </div>
-
                                         <div class="col-md-2">
                                             <label class="form-label small">Applied From</label>
                                             <input type="date" name="applied_from" class="form-control" value="{{ request('applied_from') }}">
                                         </div>
-
                                         <div class="col-md-2">
                                             <label class="form-label small">Applied To</label>
                                             <input type="date" name="applied_to" class="form-control" value="{{ request('applied_to') }}">
                                         </div>
                                     </div>
-
                                     <div class="mt-3 text-end">
                                         <a href="{{ url('/display-candidates') }}" class="btn btn-secondary">Reset</a>
                                         <button type="submit" class="btn btn-primary">Apply Filters</button>
@@ -319,12 +314,19 @@
                                 </div>
                             </div>
                         </form>
-
-                        @if(strtolower($electionStatus ?? 'pending') === 'pending')
-                            <button class="btn btn-outline-primary" id="toggleActions" onclick="toggleActionsColumn()">
-                                <i class="fas fa-cog"></i> Actions
-                            </button>
-                        @endif
+                        
+                        <div class="d-flex flex-column align-items-end gap-2">
+                            <!-- UPDATED EXPORT BUTTON -->
+                            <a href="{{ route('candidates.export.pdf', request()->all()) }}" class="btn btn-success" title="Export current view to PDF">
+                                <i class="fas fa-file-pdf"></i> Export PDF
+                            </a>
+                            
+                            @if(strtolower($electionStatus ?? 'pending') === 'pending')
+                                <button class="btn btn-outline-primary" id="toggleActions" onclick="toggleActionsColumn()">
+                                    <i class="fas fa-cog"></i> Actions
+                                </button>
+                            @endif
+                        </div>
                     </div>
 
                     @if($candidates->total() > 0)

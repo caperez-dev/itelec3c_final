@@ -292,6 +292,7 @@
                         </div>
                     </div>
 
+                    <!-- Find this section in your voters-list.blade.php (around line 300) -->
                     <!-- Search + Filter (always visible) -->
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <form action="{{ url('/voters') }}" method="GET" class="flex-grow-1 me-3">
@@ -302,7 +303,6 @@
                                     <i class="fas fa-filter"></i> Filter
                                 </button>
                             </div>
-
                             <div class="collapse mt-2" id="filterCollapse">
                                 <div class="card card-body p-3">
                                     <div class="row g-2">
@@ -339,8 +339,12 @@
                                 </div>
                             </div>
                         </form>
-
                         <div class="d-flex flex-column align-items-end gap-2">
+                            <!-- EXPORT PDF BUTTON - ADD THIS -->
+                            <a href="{{ route('voters.export.pdf', request()->all()) }}" class="btn btn-success" title="Export current view to PDF">
+                                <i class="fas fa-file-pdf"></i> Export PDF
+                            </a>
+                            
                             @if(strtolower($electionStatus ?? 'pending') === 'pending')
                                 <button class="btn btn-outline-primary" id="toggleActions" onclick="toggleActionsColumn()">
                                     <i class="fas fa-cog"></i> Actions

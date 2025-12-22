@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/register-voter', [VoterController::class, 'store'])->name('register.voter.store');
     Route::get('/voter-registered/{id}', [VoterController::class, 'registrationSuccess'])->name('voter.registered.success');
     Route::get('/voters', [VoterController::class, 'index'])->name('voters.list');
+    Route::get('/voters/export-pdf', [VoterController::class, 'exportPDF'])->name('voters.export.pdf');
     Route::get('/voters/{id}/edit', [VoterController::class, 'edit'])->name('voters.edit');
     Route::put('/voters/{id}', [VoterController::class, 'update'])->name('voters.update');
     Route::delete('/voters/{id}', [VoterController::class, 'destroy'])->name('voters.destroy');
@@ -88,6 +89,7 @@ Route::middleware('auth')->group(function () {
 // Candidate Routes - Admin Only
 Route::middleware('auth')->group(function () {
     Route::get('/display-candidates', [CandidateController::class, 'index'])->name('display.candidates');
+    Route::get('/candidates/export-pdf', [CandidateController::class, 'exportPDF'])->name('candidates.export.pdf');
     Route::get('/register-candidate', [CandidateController::class, 'create'])->name('register.candidate');
     Route::post('/register-candidate', [CandidateController::class, 'store'])->name('register.candidate.store');
     Route::get('/candidates/{id}/edit', [CandidateController::class, 'edit'])->name('candidates.edit');
@@ -100,6 +102,8 @@ Route::middleware('auth')->group(function () {
 
 // Vote Routes
 Route::get('/display-votes', [VoteController::class, 'DisplayVotes'])->name('votes.display');
+Route::get('/votes/export-pdf', [VoteController::class, 'exportPDF'])->name('votes.export.pdf');
+Route::get('/vote-counts/export-pdf', [VoteController::class, 'exportVoteCountsPDF'])->name('vote.counts.export.pdf');
 Route::get('/display-vote-counts', [VoteController::class, 'VoteCountsDisplay'])->name('display.vote.counts');
 
 // Position Routes

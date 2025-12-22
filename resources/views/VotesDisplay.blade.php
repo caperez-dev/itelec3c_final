@@ -178,7 +178,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h1 class="mb-0">Votes List</h1>
                     </div>
-                    <!-- Search bar (always visible so it doesn't disappear when query has no matches) -->
+                    <!-- Search bar + Filter + Export Button -->
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <form action="{{ url('/display-votes') }}" method="GET" class="flex-grow-1 me-3">
                             <div class="input-group">
@@ -188,7 +188,6 @@
                                     <i class="fas fa-filter"></i> Filter
                                 </button>
                             </div>
-
                             <div class="collapse mt-3 @if(request('applied_from') || request('applied_to')) show @endif" id="voteFilters">
                                 <div class="card card-body p-3">
                                     <div class="row g-2">
@@ -196,13 +195,11 @@
                                             <label class="form-label small">Voted From</label>
                                             <input type="date" name="applied_from" class="form-control" value="{{ request('applied_from') }}">
                                         </div>
-
                                         <div class="col-md-6">
                                             <label class="form-label small">Voted To</label>
                                             <input type="date" name="applied_to" class="form-control" value="{{ request('applied_to') }}">
                                         </div>
                                     </div>
-
                                     <div class="mt-3 text-end">
                                         <a href="{{ url('/display-votes') }}" class="btn btn-secondary">Reset</a>
                                         <button type="submit" class="btn btn-primary">Apply Filters</button>
@@ -210,8 +207,13 @@
                                 </div>
                             </div>
                         </form>
+                        <!-- Export PDF Button -->
+                        <div class="d-flex flex-column align-items-end gap-2">
+                            <a href="{{ route('votes.export.pdf', request()->all()) }}" class="btn btn-success" title="Export current view to PDF">
+                                <i class="fas fa-file-pdf"></i> Export PDF
+                            </a>
+                        </div>
                     </div>
-
                     @if($votes->total() > 0)
                         <div class="table-responsive">
                             <table class="table table-hover align-middle">
