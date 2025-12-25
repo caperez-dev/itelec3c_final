@@ -102,14 +102,14 @@ Route::middleware('auth')->group(function () {
 });
 
 // Vote Routes
-Route::get('/display-votes', [VoteController::class, 'DisplayVotes'])->name('votes.display');
-Route::get('/votes/export-pdf', [VoteController::class, 'exportPDF'])->name('votes.export.pdf');
-Route::get('/vote-counts/export-pdf', [VoteController::class, 'exportVoteCountsPDF'])->name('vote.counts.export.pdf');
-Route::get('/display-vote-counts', [VoteController::class, 'VoteCountsDisplay'])->name('display.vote.counts');
+Route::get('/display-votes', [VoteController::class, 'DisplayVotes'])->middleware('auth')->name('votes.display');
+Route::get('/votes/export-pdf', [VoteController::class, 'exportPDF'])->middleware('auth')->name('votes.export.pdf');
+Route::get('/vote-counts/export-pdf', [VoteController::class, 'exportVoteCountsPDF'])->middleware('auth')->name('vote.counts.export.pdf');
+Route::get('/display-vote-counts', [VoteController::class, 'VoteCountsDisplay'])->middleware('auth')->name('display.vote.counts');
 
 // Position Routes
 // Active Positions
-Route::get('/display-positions', [PositionController::class, 'PositionsDisplay'])->name('display.positions');
+Route::get('/display-positions', [PositionController::class, 'PositionsDisplay'])->middleware('auth')->name('display.positions');
 
 // Create Position form and store
 Route::get('/create-position', [PositionController::class, 'create'])->name('position.create');

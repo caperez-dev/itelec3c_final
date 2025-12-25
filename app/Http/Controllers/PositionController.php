@@ -138,6 +138,17 @@ class PositionController extends Controller
         }
         
         $position = Position::findOrFail($id);
+        
+        // Check if there are any active candidates for this position
+        $candidatesCount = \App\Models\Candidate::where('position_id', $id)
+            ->whereNull('deleted_at')
+            ->count();
+        
+        if ($candidatesCount > 0) {
+            return redirect()->route('display.positions')
+                ->with('error', 'Cannot delete this position. There are candidates associated with it.');
+        }
+        
         $position->delete();
         
         // Log the activity
