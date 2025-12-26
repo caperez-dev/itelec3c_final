@@ -137,7 +137,9 @@
     <div class="d-flex">
     <div class="sidebar-color text-white p-3 p-md-4" style="width: 250px; height: auto; min-height: 100vh;">
         <div class="sticky-top pt-2">
-            <h4 class="text-center mb-4">Election System</h4>
+            <div>
+                <img src="{{ asset('Logowithtext.png') }}" alt="CICSelect" style="width: 200px; height: auto;">
+            </div>
             <hr class="my-3">
             <ul class="nav flex-column">
                 <li class="nav-item mb-2">

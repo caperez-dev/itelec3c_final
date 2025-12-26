@@ -4,9 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archived Voters</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        body {
+            background-color: #f0f4f8;
+        }
+        
+        .position-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            border-top: 5px solid #1e40af;
+        }
+        
+        h1, h3 {
+            color: #1e40af;
+            margin-bottom: 30px;
+        }
+        
+        .table-header {
+            background-color: #1e40af;
+            color: white;
+        }
+        .table-header a {
+            color: white !important;
+            text-decoration: none;
+        }
+        .table-header a:hover {
+            color: white !important;
+            text-decoration: none;
+        }
+        
+        .btn-add {
+            background-color: #1e40af;
+            color: white;
+            padding: 10px 30px;
+            border: none;
+            text-decoration: none;
+        }
+        
+        .btn-add:hover {
+            background-color: #1e3a8a;
+            color: white;
+        }
+        
+        .btn-register {
+            background-color: #1e40af;
+            color: white;
+            padding: 10px 30px;
+            border: none;
+            text-decoration: none;
+        }
+        
+        .btn-register:hover {
+            background-color: #1e3a8a;
+            color: white;
+        }
+
+        .btn-register:disabled,
+        .btn-register.disabled {
+            background-color: #94a3b8;
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .position-badge {
+            background-color: #e0e7ff;
+            color: #1e40af;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .btn-action {
+            padding: 5px 10px;
+            font-size: 0.875rem;
+            margin: 0 2px;
+        }
+
+        .btn-action:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .alert {
+            margin-bottom: 20px;
+        }
+
         .election-status-alert {
             background-color: #fef3c7;
             border-left: 4px solid #f59e0b;
@@ -19,16 +118,135 @@
         .election-status-alert i {
             margin-right: 8px;
         }
-
-        .btn-action:disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
+        
+        .btn-view {
+            color: #1e40af;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0;
+            font-size: 1.2rem;
         }
-
+        
+        .btn-view:hover {
+            color: #1e3a8a;
+        }
+        
+        .modal-header {
+            background-color: #1e40af;
+            color: white;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #1e40af;
+        }
+        
+        .actions-column {
+            transition: all 0.3s ease;
+        }
+        
+        .description-text {
+            max-width: 300px;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+        
+        /* Pagination Styles */
+        .pagination {
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .pagination .page-link {
+            color: #1e40af;
+            border: 1px solid #1e40af;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #1e40af;
+            border-color: #1e40af;
+            color: white;
+        }
+        .pagination .page-link:hover {
+            background-color: #e0e7ff;
+            color: #1e40af;
+        }
+        .pagination-info {
+            text-align: center;
+            color: #64748b;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
         .sidebar-color {
             background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
         }
         
+        /* Voter-specific styles */
+        .voter-key {
+            background-color: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: #f8fafc;
+        }
+        
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .table th {
+            font-weight: 600;
+        }
+        
+        .form-control:focus {
+            border-color: #1e40af;
+            box-shadow: 0 0 0 0.25rem rgba(30, 64, 175, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: #1e40af;
+            border-color: #1e40af;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e3a8a;
+            border-color: #1e3a8a;
+        }
+        
+        .btn-success {
+            background-color: #10b981;
+            border-color: #10b981;
+        }
+        
+        .btn-success:hover {
+            background-color: #0da271;
+            border-color: #0da271;
+        }
+        
+        .btn-danger {
+            background-color: #ef4444;
+            border-color: #ef4444;
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+        
+        .btn-outline-primary {
+            color: #1e40af;
+            border-color: #1e40af;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: #1e40af;
+            border-color: #1e40af;
+        }
     </style>
 </head>
 <body>
@@ -36,7 +254,9 @@
     <div class="d-flex">
         <div class="sidebar-color text-white p-3 p-md-4" style="width: 250px; height: auto; min-height: 100vh;">
             <div class="sticky-top pt-2">
-                <h4 class="text-center mb-4">Election System</h4>
+                <div>
+                    <img src="{{ asset('Logowithtext.png') }}" alt="CICSelect" style="width: 200px; height: auto;">
+                </div>
                 <hr class="my-3">
                 <ul class="nav flex-column">
                     <li class="nav-item mb-2">
@@ -74,7 +294,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF" class="me-2"><path d="M480-360h120q33 0 56.5-23.5T680-440v-240q0-33-23.5-56.5T600-760h-80q-33 0-56.5 23.5T440-680v80q0 33 23.5 56.5T520-520h80v80H480v80Zm120-240h-80v-80h80v80ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320Zm0-80h480v-480H320v480ZM160-80q-33 0-56.5-23.5T80-160v-560h80v560h560v80H160Zm160-720v480-480Z"/></svg>    
                             <b>Vote Counts</b>
                         </a>
-                    </li>
+                </li>
                     <li class="nav-item mb-2">
                         <a href="{{ route('logs.display') }}" class="nav-link text-white py-3 px-3 rounded">
                             <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF" class="me-2"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/></svg>
@@ -100,107 +320,127 @@
                 </div>
             </div>
         </div>
-        <div class="container mt-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3><i class="fas fa-archive me-2"></i>Archived Voters</h3>
-                <a href="{{ url('/voters') }}" class="btn btn-primary">
-                    <i class="fas fa-arrow-left me-2"></i>View Active Voters
-                </a>
-            </div>
-            
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
+        
+        <div class="container" style="padding-top: 40px;">
+            <div class="row justify-content-center">
+                <div class="col-md-11 col-lg-10">
+                    <div class="position-container">
+                        <!-- Success Message -->
+                        @if(session('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        @endif
 
-            @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
+                        @if(session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        @endif
 
-            <!-- Election Status Warning -->
-            @if(strtolower($electionStatus ?? 'pending') !== 'pending')
-                <div class="election-status-alert">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <strong>Actions Disabled:</strong> Voter restoration and permanent deletion are locked because the election status is currently "<strong>{{ ucfirst($electionStatus) }}</strong>". 
-                    Only viewing is available. To restore or permanently delete voters, the election must be in "Pending" status.
+                        <!-- Election Status Warning -->
+                        @if(strtolower($electionStatus ?? 'pending') !== 'pending')
+                            <div class="election-status-alert">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Actions Disabled:</strong> Voter restoration and permanent deletion are locked because the election status is currently "<strong>{{ ucfirst($electionStatus) }}</strong>". 
+                                Only viewing is available. To restore or permanently delete voters, the election must be in "Pending" status.
+                            </div>
+                        @endif
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h1 class="mb-0">Archived Voters</h1>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url('/voters') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i> View Active Voters
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Search bar -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <form action="{{ url('/display-archived-voters') }}" method="GET" class="flex-grow-1 me-3">
+                                <div class="input-group">
+                                    <input type="search" name="search" class="form-control" placeholder="Search archived voter..." value="{{ request('search') }}" autocomplete="off">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        @if($voters->count() > 0)
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-header">
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Voter Key</th>
+                                            <th scope="col">First Name</th>
+                                            <th scope="col">Last Name</th>
+                                            <th scope="col">Gender</th>
+                                            <th scope="col">Contact</th>
+                                            <th scope="col">Deleted At</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($voters as $voter)
+                                            <tr>
+                                                <th scope="row">{{ $voter->voter_id }}</th>
+                                                <td><span class="voter-key">{{ $voter->voter_key }}</span></td>
+                                                <td>{{ $voter->first_name }}</td>
+                                                <td>{{ $voter->last_name }}</td>
+                                                <td>{{ $voter->gender }}</td>
+                                                <td>{{ $voter->contact_information }}</td>
+                                                <td>{{ $voter->deleted_at->format('M d, Y h:i A') }}</td>
+                                                <td>
+                                                    @if(strtolower($electionStatus ?? 'pending') === 'pending')
+                                                        <form action="{{ url('restore-voter/'.$voter->voter_id) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-sm btn-success btn-action" onclick="return confirm('Are you sure you want to restore this voter?')">
+                                                                <i class="fas fa-undo me-1"></i>Restore
+                                                            </button>
+                                                        </form>
+                                                        <form action="{{ url('force-delete-voter/'.$voter->voter_id) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-sm btn-danger btn-action" onclick="return confirm('Are you sure you want to PERMANENTLY delete this voter? This action cannot be undone!')">
+                                                                <i class="fas fa-trash-alt me-1"></i>Delete
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <button class="btn btn-sm btn-success btn-action" disabled title="Election must be in Pending status">
+                                                            <i class="fas fa-undo me-1"></i>Restore
+                                                        </button>
+                                                        <button class="btn btn-sm btn-danger btn-action" disabled title="Election must be in Pending status">
+                                                            <i class="fas fa-trash-alt me-1"></i>Delete
+                                                        </button>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                <!-- Pagination Links -->
+                                @if($voters->hasPages())
+                                    <div class="pagination-wrapper">
+                                        {{ $voters->links('pagination::bootstrap-5') }}
+                                    </div>
+                                @endif
+                            </div>
+                        @else
+                            <div class="empty-state">
+                                <div class="mb-3">📋</div>
+                                <h4>No Archived Voters Found</h4>
+                                <p class="mb-4">There are no archived voters to display.</p>
+                            </div>
+                        @endif
+                    </div>
                 </div>
-            @endif
-            
-            <form action="{{ url('/display-archived-voters') }}" method="GET" class="mb-3">
-                <div class="input-group">
-                    <input type="search" name="search" class="form-control" placeholder="Search archived voter..." value="{{ request('search') }}" autocomplete="off">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search me-1"></i>Search
-                    </button>
-                </div>
-            </form>
-            
-            @if($voters->count() > 0)
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>#</th>
-                            <th>Voter Key</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Gender</th>
-                            <th>Contact</th>
-                            <th>Deleted At</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($voters as $voter)
-                            <tr>
-                                <td>{{ $voter->voter_id }}</td>
-                                <td><code>{{ $voter->voter_key }}</code></td>
-                                <td>{{ $voter->first_name }}</td>
-                                <td>{{ $voter->last_name }}</td>
-                                <td>{{ $voter->gender }}</td>
-                                <td>{{ $voter->contact_information }}</td>
-                                <td>{{ $voter->deleted_at->format('M d, Y h:i A') }}</td>
-                                <td>
-                                    @if(strtolower($electionStatus ?? 'pending') === 'pending')
-                                        <form action="{{ url('restore-voter/'.$voter->voter_id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-success mb-1" onclick="return confirm('Are you sure you want to restore this voter?')">
-                                                <i class="fas fa-undo me-1"></i>Restore
-                                            </button>
-                                        </form>
-                                        <form action="{{ url('force-delete-voter/'.$voter->voter_id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger mb-1" onclick="return confirm('Are you sure you want to PERMANENTLY delete this voter? This action cannot be undone!')">
-                                                <i class="fas fa-trash-alt me-1"></i>Delete
-                                            </button>
-                                        </form>
-                                    @else
-                                        <button class="btn btn-sm btn-success mb-1 btn-action" disabled title="Election must be in Pending status">
-                                            <i class="fas fa-undo me-1"></i>Restore
-                                        </button>
-                                        <button class="btn btn-sm btn-danger mb-1 btn-action" disabled title="Election must be in Pending status">
-                                            <i class="fas fa-trash-alt me-1"></i>Delete
-                                        </button>
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
             </div>
-            @else
-                <div class="alert alert-info text-center">
-                    <i class="fas fa-info-circle me-2"></i>No archived voters found.
-                </div>
-            @endif
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>
