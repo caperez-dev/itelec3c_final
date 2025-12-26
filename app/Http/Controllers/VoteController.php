@@ -45,6 +45,14 @@ class VoteController extends Controller
             return redirect()->route('voter.login')->with('error', 'Please login first');
         }
 
+        $voterId = Session::get('voter_id');
+        $voter = Voter::find($voterId);
+
+        // Check if voter has already voted
+        if ($voter && $voter->has_voted) {
+            return redirect()->route('voter.results');
+        }
+
         // Get all active positions with their candidates
         $positions = Position::whereNull('deleted_at')
             ->with(['candidates' => function($query) {
@@ -142,6 +150,11 @@ class VoteController extends Controller
      */
     public function showResults()
     {
+        // Check if voter is logged in via session
+        if (!Session::has('voter_id')) {
+            return redirect()->route('voter.login')->with('error', 'Please login first');
+        }
+
         // Get all positions with their candidates and each candidate's vote count
         $positions = Position::whereNull('deleted_at')
             ->with(['candidates' => function($query) {

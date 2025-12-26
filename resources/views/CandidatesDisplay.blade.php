@@ -474,7 +474,16 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="row">
-                                                        <div class="col-md-12">
+                                                        <div class="col-md-4 text-center mb-3">
+                                                            @if($candidate->imagepath && file_exists(storage_path('app/public/' . $candidate->imagepath)))
+                                                                <img src="{{ asset('storage/'.$candidate->imagepath) }}" alt="Candidate Image" class="candidate-image-modal">
+                                                            @else
+                                                                <div class="candidate-image-modal d-flex align-items-center justify-content-center bg-light text-muted" style="border: 3px solid #1e40af;">
+                                                                    <i class="fas fa-user-tie fa-3x"></i>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-md-8">
                                                             <div class="row mb-3">
                                                                 <div class="col-6">
                                                                     <p class="info-label mb-1">Candidate ID:</p>

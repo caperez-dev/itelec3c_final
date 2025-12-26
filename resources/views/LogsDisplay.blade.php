@@ -192,7 +192,7 @@
                             <div class="input-group">
                                 <input type="search" name="search" class="form-control" placeholder="Search activity..." value="{{ request('search') }}">
                                 <button type="submit" class="btn btn-primary">Search</button>
-                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="true" aria-controls="filterCollapse">
                                     <i class="fas fa-filter"></i> Filter
                                 </button>
                             </div>
@@ -207,6 +207,18 @@
                                             <label class="form-label small">Date To</label>
                                             <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
                                         </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label small">Activity Type</label>
+                                            <select name="activity_type" class="form-select">
+                                                <option value="all" {{ request('activity_type') == 'all' || !request('activity_type') ? 'selected' : '' }}>All Activities</option>
+                                                <option value="Voter" {{ request('activity_type') == 'Voter' ? 'selected' : '' }}>Voter Activities</option>
+                                                <option value="Candidate" {{ request('activity_type') == 'Candidate' ? 'selected' : '' }}>Candidate Activities</option>
+                                                <option value="Election" {{ request('activity_type') == 'Election' ? 'selected' : '' }}>Election Activities</option>
+                                                <option value="Position" {{ request('activity_type') == 'Position' ? 'selected' : '' }}>Position Activities</option>
+                                                <option value="Login" {{ request('activity_type') == 'Login' ? 'selected' : '' }}>Login Activities</option>
+                                                <option value="Exported" {{ request('activity_type') == 'Exported' ? 'selected' : '' }}>Export Activities</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="mt-3 d-flex gap-2">
                                         <button type="submit" class="btn btn-primary">Apply Filters</button>
@@ -215,6 +227,10 @@
                                 </div>
                             </div>
                         </form>
+                        <!-- Export PDF Button -->
+                        <a href="{{ route('logs.export.pdf', request()->all()) }}" class="btn btn-danger" title="Export to PDF">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </a>
                     </div>
 
                     @if($logs->total() > 0)

@@ -149,4 +149,5 @@ Route::middleware('auth')->group(function () {
 // Log Routes - Admin Only
 Route::middleware('auth')->group(function () {
     Route::get('/logs', [App\Http\Controllers\LogController::class, 'index'])->name('logs.display');
+    Route::get('/logs/export-pdf', [App\Http\Controllers\LogController::class, 'exportPDF'])->name('logs.export.pdf');
 });

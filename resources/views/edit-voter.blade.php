@@ -170,14 +170,20 @@
                                 class="form-control" 
                                 id="absimagepath" 
                                 name="absimagepath"
-                                accept="image/*"
+                                accept="image/jpeg,image/png,image/jpg,image/gif"
+                                onchange="previewImage(event)"
                             >
+                            <small class="text-muted">Accepted formats: JPEG, PNG, JPG, GIF (Max: 2MB)</small>
                             @if($voter->imagepath)
                                 <div class="mt-2">
                                     <p class="mb-1"><strong>Current Image:</strong></p>
                                     <img src="{{ asset('storage/'.$voter->imagepath) }}" alt="Current voter image" class="current-image">
                                 </div>
                             @endif
+                            <div id="imagePreview" class="mt-2" style="display: none;">
+                                <small class="text-muted">New image preview:</small><br>
+                                <img id="previewImg" src="" alt="New Image Preview" style="max-width: 150px; max-height: 150px; object-fit: cover; border: 2px solid #1e40af; border-radius: 8px;">
+                            </div>
                         </div>
 
                         <div class="row mt-4">
@@ -198,6 +204,24 @@
         </div>
     </div>
     
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>

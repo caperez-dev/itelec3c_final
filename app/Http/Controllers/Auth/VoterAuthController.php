@@ -14,6 +14,11 @@ class VoterAuthController extends Controller
      */
     public function showLoginForm()
     {
+        // Check if voter is already logged in
+        if (Session::has('voter_id')) {
+            return redirect()->route('voter.voting');
+        }
+
         return view('voter-login');
     }
 
@@ -55,21 +60,16 @@ class VoterAuthController extends Controller
                 ->withInput($request->only('fullname'));
         }
 
-        // Check if voter has already voted
-        if ($voter->has_voted) {
-            return back()
-                ->withErrors([
-                    'voter_key' => 'You have already voted in this election.',
-                ])
-                ->withInput($request->only('fullname', 'voter_key'));
-        }
-
         // Store voter session
         Session::put('voter_id', $voter->voter_id);
         Session::put('voter_name', $voter->first_name . ' ' . $voter->last_name);
 
-        // Redirect to candidates page (view only)
-        return redirect()->route('voter.candidates');
+        // Redirect based on voting status
+        if ($voter->has_voted) {
+            return redirect()->route('voter.results')->with('success', 'Welcome back! You can view the election results.');
+        } else {
+            return redirect()->route('voter.voting');
+        }
     }
 
     /**

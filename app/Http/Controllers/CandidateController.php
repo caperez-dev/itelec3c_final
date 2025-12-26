@@ -278,12 +278,32 @@ class CandidateController extends Controller
                         $fail('The selected position is invalid.');
                     }
                 }
-            ], [
-                'candidate_name.regex' => 'Candidate name may only contain letters, spaces, dots, and hyphens.',
-                'candidate_name.unique' => 'A candidate with this name already exists for this position.',
-                'party_affiliation.regex' => 'Party affiliation may only contain letters, numbers, spaces, hyphens, and ampersand.',
             ],
+            'imagepath' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg,gif',
+                'max:2048', // 2MB
+                'dimensions:min_width=100,min_height=100,max_width=2000,max_height=2000',
+            ]
+        ], [
+            'candidate_name.regex' => 'Candidate name may only contain letters, spaces, dots, and hyphens.',
+            'candidate_name.unique' => 'A candidate with this name already exists for this position.',
+            'party_affiliation.regex' => 'Party affiliation may only contain letters, numbers, spaces, hyphens, and ampersand.',
+            'imagepath.dimensions' => 'Image must be between 100x100 and 2000x2000 pixels.',
         ]);
+
+        // Handle image upload
+        if ($request->hasFile('imagepath')) {
+            // Delete old image if exists
+            if ($candidate->imagepath && file_exists(storage_path('app/public/' . $candidate->imagepath))) {
+                unlink(storage_path('app/public/' . $candidate->imagepath));
+            }
+            
+            // Store new image
+            $imagePath = $request->file('imagepath')->store('candidates', 'public');
+            $candidate->imagepath = $imagePath;
+        }
 
         $candidate->update([
             'candidate_name' => $validated['candidate_name'],

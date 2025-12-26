@@ -80,7 +80,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('candidates.update', $candidate->candidate_id) }}" method="POST">
+                    <form action="{{ route('candidates.update', $candidate->candidate_id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         
@@ -110,6 +110,23 @@
                                 value="{{ old('party_affiliation', $candidate->party_affiliation) }}"
                                 required
                             >
+                        </div>
+
+                        <!-- Candidate Photo -->
+                        <div class="mb-3">
+                            <label for="imagepath" class="form-label">Candidate Photo (Optional)</label>
+                            <input type="file" name="imagepath" id="imagepath" class="form-control" accept="image/jpeg,image/png,image/jpg,image/gif" onchange="previewImage(event)">
+                            <small class="text-muted">Accepted formats: JPEG, PNG, JPG, GIF (Max: 2MB)</small>
+                            @if($candidate->imagepath)
+                                <div class="mt-2">
+                                    <small class="text-muted">Current photo:</small><br>
+                                    <img src="{{ asset('storage/'.$candidate->imagepath) }}" alt="Current Candidate Photo" style="max-width: 150px; max-height: 150px; object-fit: cover; border: 2px solid #1e40af; border-radius: 8px;">
+                                </div>
+                            @endif
+                            <div id="imagePreview" class="mt-2" style="display: none;">
+                                <small class="text-muted">New photo preview:</small><br>
+                                <img id="previewImg" src="" alt="New Image Preview" style="max-width: 150px; max-height: 150px; object-fit: cover; border: 2px solid #1e40af; border-radius: 8px;">
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -145,6 +162,24 @@
         </div>
     </div>
     
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>

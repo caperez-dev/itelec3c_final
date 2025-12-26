@@ -272,7 +272,7 @@
                         </form>
                         @if(strtolower($electionStatus ?? 'pending') === 'pending')
                             <button id="toggleActions" type="button" class="btn btn-outline-primary" onclick="toggleActionsColumn()" title="Toggle Actions Column">
-                                <i class="fas fa-eye"></i> Toggle Actions
+                                <i class="fas fa-eye"></i> Actions
                             </button>
                         @endif
                     </div>

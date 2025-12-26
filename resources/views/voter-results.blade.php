@@ -82,9 +82,14 @@
             opacity: 0.95;
         }
 
+        .voter-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
         .voter-details {
             text-align: right;
-            margin-right: 1rem;
         }
 
         .voter-details p:first-child {
@@ -914,9 +919,20 @@
             </div>
             
             @if(session('voter_name'))
-                <div class="voter-details">
-                    <p>Hello, {{ session('voter_name') }}</p>
-                    <p>Registered Student Voter</p>
+                <div class="voter-info">
+                    <div class="voter-details">
+                        <p>Hello, {{ session('voter_name') }}</p>
+                        <p>Registered Student Voter</p>
+                    </div>
+                    <form method="POST" action="{{ route('voter.logout') }}" id="logoutForm">
+                        @csrf
+                        <button type="button" class="logout-btn" onclick="confirmLogout()">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            Sign Out
+                        </button>
+                    </form>
                 </div>
             @endif
         </div>
@@ -1135,7 +1151,7 @@
             Swal.fire({
                 icon: 'warning',
                 title: 'Sign Out',
-                html: '<strong>Are you sure you want to sign out?</strong><br><br><span style="color: #dc2626; font-weight: 600;">Warning: You will NOT be able to log in again after signing out.</span>',
+                html: '<strong>Are you sure you want to sign out?</strong>',
                 background: '#ffffff',
                 color: '#1e293b',
                 iconColor: '#f59e0b',

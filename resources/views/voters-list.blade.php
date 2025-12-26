@@ -472,7 +472,13 @@
                                                 <div class="modal-body">
                                                     <div class="row">
                                                         <div class="col-md-4 text-center mb-3">
-                                                            <img src="{{ asset('storage/'.$voter->imagepath) }}" alt="Voter Image" class="voter-image-modal">
+                                                            @if($voter->imagepath && file_exists(storage_path('app/public/' . $voter->imagepath)))
+                                                                <img src="{{ asset('storage/'.$voter->imagepath) }}" alt="Voter Image" class="voter-image-modal">
+                                                            @else
+                                                                <div class="voter-image-modal d-flex align-items-center justify-content-center bg-light text-muted" style="border: 3px solid #1e40af;">
+                                                                    <i class="fas fa-user fa-3x"></i>
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                         <div class="col-md-8">
                                                             <div class="row mb-3">
