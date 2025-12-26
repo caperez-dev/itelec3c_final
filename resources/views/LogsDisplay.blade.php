@@ -217,7 +217,7 @@
                             <div class="input-group">
                                 <input type="search" name="search" class="form-control" placeholder="Search activity..." value="{{ request('search') }}">
                                 <button type="submit" class="btn btn-primary">Search</button>
-                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="true" aria-controls="filterCollapse">
+                                <button class="btn btn-outline-secondary ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="true" aria-controls="filterCollapse">
                                     <i class="fas fa-filter"></i> Filter
                                 </button>
                             </div>
@@ -253,7 +253,7 @@
                             </div>
                         </form>
                         <!-- Export PDF Button -->
-                        <a href="{{ route('logs.export.pdf', request()->all()) }}" class="btn btn-danger" title="Export to PDF">
+                        <a href="{{ route('logs.export.pdf', request()->all()) }}" class="btn btn-success" title="Export to PDF">
                             <i class="fas fa-file-pdf"></i> Export PDF
                         </a>
                     </div>
