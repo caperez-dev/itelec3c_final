@@ -336,7 +336,7 @@
                             <div class="input-group">
                                 <input type="search" name="search" class="form-control" placeholder="Search voter..." value="{{ request('search') }}">
                                 <button type="submit" class="btn btn-primary">Search</button>
-                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+                                <button class="btn btn-outline-secondary ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
                                     <i class="fas fa-filter"></i> Filter
                                 </button>
                             </div>

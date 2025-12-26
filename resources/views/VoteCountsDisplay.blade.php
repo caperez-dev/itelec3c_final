@@ -203,19 +203,19 @@
                     
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h1 class="mb-0">Vote Counts</h1>
-                        <a href="{{ url('/vote-counts/export-pdf') }}?search={{ request('search') }}" class="btn btn-success" title="Export current view to PDF">
-                            <i class="fas fa-file-pdf"></i> Export PDF
-                        </a>
                     </div>
                     
-                    <!-- Search bar (always visible so it doesn't disappear when query has no matches) -->
-                    <div class="mb-3">
-                        <form action="{{ url('/display-vote-counts') }}" method="GET">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <form action="{{ url('/display-vote-counts') }}" method="GET" class="flex-grow-1 me-3">
                             <div class="input-group">
                                 <input type="search" name="search" class="form-control" placeholder="Search candidate..." value="{{ request('search') }}" autocomplete="off">
                                 <button type="submit" class="btn btn-primary">Search</button>
                             </div>
                         </form>
+                        <!-- Export PDF Button -->
+                        <a href="{{ url('/vote-counts/export-pdf') }}?search={{ request('search') }}" class="btn btn-success" title="Export current view to PDF">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </a>
                     </div>
                     @if(isset($positions) && $positions->count())
                         <div class="row">
