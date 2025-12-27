@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 use App\Models\Log;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class LogController extends Controller
 {
     public function index(Request $request)
     {
+        if (Auth::check() && Auth::user()->role === 'organizer') {
+            return redirect('/dashboard');
+        }
         $query = Log::with('user');
 
         // Search functionality
@@ -50,6 +54,9 @@ class LogController extends Controller
 
     public function exportPDF(Request $request)
     {
+        if (Auth::check() && Auth::user()->role === 'organizer') {
+            return redirect('/dashboard');
+        }
         // Log the export activity
         Log::create([
             'activity' => 'Exported Logs in PDF',

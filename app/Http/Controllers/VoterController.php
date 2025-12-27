@@ -6,11 +6,15 @@ use App\Models\Voter;
 use App\Models\Election;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class VoterController extends Controller
 {
     public function index(Request $request)
     {
+        if (Auth::check() && Auth::user()->role === 'organizer') {
+            return redirect('/dashboard');
+        }
         // Get current election status
         $election = Election::find(1);
         $electionStatus = $election ? $election->status : 'pending';
@@ -338,6 +342,9 @@ class VoterController extends Controller
 
     public function ArchivedVotersDisplay(Request $request)
     {
+        if (Auth::check() && Auth::user()->role === 'organizer') {
+            return redirect('/dashboard');
+        }
         // Get current election status
         $election = Election::find(1);
         $electionStatus = $election ? $election->status : 'pending';

@@ -14,6 +14,9 @@ class ElectionController extends Controller
      */
     public function settings()
     {
+        if (Auth::check() && Auth::user()->role === 'organizer') {
+            return redirect('/dashboard');
+        }
         // Get current election status
         $election = Election::find(1);
         $electionStatus = $election ? $election->status : 'Pending';
