@@ -762,6 +762,13 @@
                     Cast Your Vote
                 </a>
             @endif
+
+            <div style="margin-top:16px;">
+                <a href="{{ url('/login') }}" class="hero-button" style="background: linear-gradient(135deg, #374151 0%, #111827 100%);">
+                    <i class="fa fa-user-shield" style="margin-right:8px; color: white;"></i>
+                    Admin Login
+                </a>
+            </div>
         </section>
 
         <!-- Features Section -->

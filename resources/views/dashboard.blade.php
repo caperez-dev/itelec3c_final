@@ -419,6 +419,7 @@
                     </div>
 
                     <!-- Election Control Buttons -->
+                    @unless(Auth::check() && Auth::user()->role === 'organizer')
                     <div class="election-controls">
                         <h3 class="mb-3" style="color: #1e40af;"><i class="fas fa-sliders-h me-2"></i>Election Controls</h3>
                         <div>
@@ -474,6 +475,7 @@
                             @endif
                         </div>
                     </div>
+                    @endunless
                     
                     <!-- Quick Actions -->
                     <div class="quick-actions">
